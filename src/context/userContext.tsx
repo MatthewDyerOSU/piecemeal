@@ -6,20 +6,25 @@ import { signOut, signInWithPopup, GoogleAuthProvider, User } from "firebase/aut
 
 import { db } from "../app/firebase";
 import { getDoc, setDoc, doc } from "firebase/firestore";
+import { Recipe } from "@/types/recipe";
 
 
 type UserSettings = {
     id: string,
+    recipes: Recipe[];
+    ingredientsOnHand: string[];
 }
 
 type AuthUser = User | null;
 
 const UserContext = createContext<
-    |
-    {
+    | {
         user: AuthUser;
         userSettings: UserSettings | null;
-        saveUserSettings: Function;
+        saveUserSettings: () => void;
+        saveRecipe: (recipe: Recipe) => Promise<void>;
+        updateIngredients: (ingredients: string[]) => Promise<void>;
+        deleteRecipe: (id: string) => Promise<void>;
     }
     | undefined
 >(undefined);
@@ -32,7 +37,9 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
         if (user != null) {
             setUserSettings({
                 id: user.uid,
-            })
+                recipes: [],
+                ingredientsOnHand: [],
+            });
         }
     }
 
@@ -57,28 +64,71 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    async function saveRecipe(newRecipe: Recipe) {
+        if (!userSettings) return;
+
+        const updatedRecipes = [...(userSettings.recipes || []), newRecipe];
+        const newSettings = { ...userSettings, recipes: updatedRecipes };
+        setUserSettings(newSettings);
+
+        await writeUserSettings(newSettings);
+    }
+
+    async function updateIngredients(ingredients: string[]) {
+        if (!userSettings) return;
+
+        const newSettings = { ...userSettings, ingredientsOnHand: ingredients };
+        setUserSettings(newSettings);
+
+        await writeUserSettings(newSettings);
+    }
+
+    async function deleteRecipe(recipeId: string) {
+        if (!userSettings) return;
+
+        const updatedRecipes = userSettings.recipes.filter(r => r.id !== recipeId);
+        const newSettings = { ...userSettings, recipes: updatedRecipes };
+
+        setUserSettings(newSettings);
+        await writeUserSettings(newSettings);
+    }
+
     return (
-        <UserContext.Provider value={{ user, userSettings, saveUserSettings }}>
+        <UserContext.Provider value={{ user, userSettings, saveUserSettings, saveRecipe, updateIngredients, deleteRecipe }}>
             {children}
         </UserContext.Provider>
     );
 }
 
-async function findUserSettings(uid: string) {
+async function findUserSettings(uid: string): Promise<UserSettings> {
     const docRef = doc(db, "users", uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
         const data = docSnap.data();
-        return { id: docSnap.id}
+        return {
+            id: uid,
+            recipes: data.recipes || [],
+            ingredientsOnHand: data.ingredientsOnHand || [],
+        };
     } else {
-        return null;
+        return {
+            id: uid,
+            recipes: [],
+            ingredientsOnHand: [],
+        };
     }
 }
 
 function writeUserSettings(userSettings: UserSettings) {
-    setDoc(doc(db, "users", userSettings.id), {
-    });
+    return setDoc(
+        doc(db, "users", userSettings.id),
+        {
+            recipes: userSettings.recipes,
+            ingredientsOnHand: userSettings.ingredientsOnHand,
+        },
+        { merge: true }
+    );
 }
 
 export const googleSignIn = () => {
@@ -103,4 +153,19 @@ export function useUserSettingsContext() {
 export function useSaveUserSettingsContext() {
     const context = useContext(UserContext);
     return context?.saveUserSettings;
+}
+
+export function useSaveRecipeContext() {
+    const context = useContext(UserContext);
+    return context?.saveRecipe;
+}
+
+export function useUpdateIngredientsContext() {
+    const context = useContext(UserContext);
+    return context?.updateIngredients;
+}
+
+export function useDeleteRecipeContext() {
+  const context = useContext(UserContext);
+  return context?.deleteRecipe;
 }

@@ -30,10 +30,10 @@ export default function NavBar() {
     }
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ backgroundColor: '#1A4A35' }}>
             <Container maxWidth={false}>
                 <Toolbar>
-                    <Box sx={{ flexGrow: 1 }}>
+                    <Box sx={{ flexGrow: 1, display: "flex", gap: 4, alignItems: "center" }}>
                         <Link href="/" style={{ color: "#fff", textDecoration: 'none' }}>
                             <Typography
                                 variant="h6"
@@ -45,6 +45,32 @@ export default function NavBar() {
                                 }}
                             >
                                 HOME
+                            </Typography>
+                        </Link>
+                        <Link href="/recipes" style={{ color: "#fff", textDecoration: 'none' }}>
+                            <Typography
+                                variant="h6"
+                                noWrap
+                                sx={{
+                                    fontFamily: 'monospace',
+                                    fontWeight: 700,
+                                    letterSpacing: '.3rem',
+                                }}
+                            >
+                                RECIPES
+                            </Typography>
+                        </Link>
+                        <Link href="/favorites" style={{ color: "#fff", textDecoration: 'none' }}>
+                            <Typography
+                                variant="h6"
+                                noWrap
+                                sx={{
+                                    fontFamily: 'monospace',
+                                    fontWeight: 700,
+                                    letterSpacing: '.3rem',
+                                }}
+                            >
+                                FAVORITES
                             </Typography>
                         </Link>
                     </Box>
