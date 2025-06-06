@@ -1,8 +1,9 @@
 'use client';
 
-import { useUserContext, useUserSettingsContext, useUpdateIngredientsContext } from "@/context/userContext";
+import { useUpdateIngredientsContext, useUserContext, useUserSettingsContext } from "@/context/userContext";
+import colors from '@/styles/colors';
 import { Recipe } from "@/types/recipe";
-import { Typography, Box, TextField, Button, List, ListItem } from "@mui/material";
+import { Box, Button, List, ListItem, TextField, Typography, Link } from "@mui/material";
 import { useState } from "react";
 
 export default function Home() {
@@ -38,21 +39,22 @@ export default function Home() {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
+      justifyContent="flex-start"
+      minHeight="80vh"
       textAlign="center"
       px={2}
+      sx={{ mt: 8 }}
     >
-      <Typography variant="h1" sx={{ color: '#1A4A35' }}>PieceMeal</Typography>
+      <Typography variant="h1" sx={{ color: colors.piecemeal_green }}>PieceMeal</Typography>
       <img src="/piecemeal_logo.png" alt="Piecemeal Logo" width={300} height={300} style={{ marginBottom: 20 }} />
 
       {user ? (
         <>
-          <Typography variant="h4" sx={{ color: '#1A4A35' }}>
+          <Typography variant="h4" sx={{ color: colors.piecemeal_green }}>
             Welcome, {user.displayName || "friend"}!
           </Typography>
 
-          <Box mt={4} width="100%" maxWidth={500}>
+          <Box  width="100%" maxWidth={500}>
             <TextField
               fullWidth
               label="Ingredients on hand (comma-separated)"
@@ -61,24 +63,34 @@ export default function Home() {
               variant="outlined"
               margin="normal"
             />
-            <Button variant="contained" onClick={handleUpdateIngredients}>
-              Find Matching Recipes
+            <Button variant="contained" onClick={handleUpdateIngredients} sx={{ backgroundColor: colors.piecemeal_orange, mt: 1 }}>
+              Find Matching Saved Recipes
             </Button>
           </Box>
 
           {filteredRecipes.length > 0 && (
-            <Box mt={4}>
-              <Typography variant="h5" gutterBottom>Matching Recipes:</Typography>
+            <Box mt={2}>
+              <Typography variant="h5" gutterBottom sx={{color: colors.piecemeal_green}}>Matching Recipes:</Typography>
               <List>
                 {filteredRecipes.map((recipe) => (
-                  <ListItem key={recipe.id}>{recipe.name}</ListItem>
+                  <ListItem key={recipe.id}>
+                    <Link
+                      href={`/saved/${recipe.id}`}
+                      style={{
+                        textDecoration: 'none',
+                        color: colors.piecemeal_green,
+                      }}
+                    >
+                      {recipe.name}
+                    </Link>
+                  </ListItem>
                 ))}
               </List>
             </Box>
           )}
         </>
       ) : (
-        <Typography variant="h5" gutterBottom sx={{ color: '#1A4A35' }}>
+        <Typography variant="h5" gutterBottom sx={{ color: colors.piecemeal_green }}>
           Please log in to continue.
         </Typography>
       )}

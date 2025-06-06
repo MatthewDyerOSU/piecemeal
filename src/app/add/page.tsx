@@ -5,6 +5,8 @@ import { Recipe } from "@/types/recipe";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import colors from '@/styles/colors';
+
 
 export default function RecipesPage() {
     const user = useUserContext();
@@ -36,7 +38,7 @@ export default function RecipesPage() {
 
     return (
         <Box p={4} maxWidth={600} mx="auto">
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom sx={{color: colors.piecemeal_green}}>
                 Add a Recipe
             </Typography>
 
@@ -66,10 +68,9 @@ export default function RecipesPage() {
 
             <Button
                 variant="contained"
-                color="primary"
                 onClick={handleSave}
                 disabled={saving}
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, backgroundColor: colors.piecemeal_orange }}
             >
                 {saving ? "Saving..." : "Save Recipe"}
             </Button>

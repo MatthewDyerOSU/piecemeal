@@ -47,7 +47,7 @@ export default function NavBar() {
                                 HOME
                             </Typography>
                         </Link>
-                        <Link href="/recipes" style={{ color: "#fff", textDecoration: 'none' }}>
+                        <Link href="/add" style={{ color: "#fff", textDecoration: 'none' }}>
                             <Typography
                                 variant="h6"
                                 noWrap
@@ -57,10 +57,10 @@ export default function NavBar() {
                                     letterSpacing: '.3rem',
                                 }}
                             >
-                                RECIPES
+                                ADD
                             </Typography>
                         </Link>
-                        <Link href="/favorites" style={{ color: "#fff", textDecoration: 'none' }}>
+                        <Link href="/saved" style={{ color: "#fff", textDecoration: 'none' }}>
                             <Typography
                                 variant="h6"
                                 noWrap
@@ -70,7 +70,7 @@ export default function NavBar() {
                                     letterSpacing: '.3rem',
                                 }}
                             >
-                                FAVORITES
+                                SAVED
                             </Typography>
                         </Link>
                     </Box>
@@ -93,11 +93,6 @@ export default function NavBar() {
                                     horizontal: 'right',
                                 }}
                             >
-                                <MenuItem onClick={handleMenuClose}>
-                                    <Link href="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        Profile
-                                    </Link>
-                                </MenuItem>
                                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
                             </Menu>
                         </>
