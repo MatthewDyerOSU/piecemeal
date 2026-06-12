@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createRecipe, type RecipeFormState } from "@/app/recipes/actions";
+import ItemListEditor from "@/components/ItemListEditor";
 
 const initialState: RecipeFormState = { errors: {} };
 
@@ -37,46 +38,21 @@ export default function NewRecipeForm() {
         ) : null}
       </div>
 
-      <div className="field">
-        <label htmlFor="recipe-ingredients">Ingredients</label>
-        <p className="field-help" id="recipe-ingredients-help">
-          Separate ingredients with commas. For example: eggs, flour, milk.
-        </p>
-        <input
-          type="text"
-          id="recipe-ingredients"
-          name="ingredients"
-          required
-          aria-invalid={errors.ingredients ? true : undefined}
-          aria-describedby={
-            errors.ingredients
-              ? "recipe-ingredients-help recipe-ingredients-error"
-              : "recipe-ingredients-help"
-          }
-        />
-        {errors.ingredients ? (
-          <p
-            id="recipe-ingredients-error"
-            role="alert"
-            className="field-error"
-          >
-            {errors.ingredients}
-          </p>
-        ) : null}
-      </div>
+      <ItemListEditor
+        label="Ingredients"
+        noun="ingredient"
+        name="ingredients"
+        help="Add ingredients one at a time. For example: 2 cups flour."
+        error={errors.ingredients}
+      />
 
-      <div className="field">
-        <label htmlFor="recipe-instructions">Instructions</label>
-        <p className="field-help" id="recipe-instructions-help">
-          Optional. Press Enter to start a new step on its own line.
-        </p>
-        <textarea
-          id="recipe-instructions"
-          name="instructions"
-          rows={8}
-          aria-describedby="recipe-instructions-help"
-        />
-      </div>
+      <ItemListEditor
+        label="Instructions"
+        noun="step"
+        name="steps"
+        help="Add the steps one at a time, in order. They are saved as a numbered list."
+        ordered
+      />
 
       <button type="submit" className="button" disabled={pending}>
         {pending ? "Saving…" : "Save recipe"}
