@@ -609,8 +609,17 @@ legend {
   margin: 0;
 }
 
+/* Grid rows stretch all cards in a row to the same height; the card
+   fills its cell and pins the actions to the bottom edge. */
 .recipe-grid > li {
   max-width: none;
+  display: flex;
+}
+
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .recipe-card h2 {
@@ -618,17 +627,11 @@ legend {
 }
 
 .recipe-card-actions {
-  margin-top: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-}
-
-.recipe-meta {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  margin-top: 0;
 }
 
 /* --- Cooking mode --- */

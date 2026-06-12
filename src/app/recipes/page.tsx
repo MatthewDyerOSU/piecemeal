@@ -3,7 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
-import { allIngredients } from "@/lib/recipes";
 import DeleteRecipeButton from "@/components/DeleteRecipeButton";
 import { deleteRecipe } from "./actions";
 
@@ -43,19 +42,12 @@ export default async function RecipesPage() {
         </p>
       ) : (
         <ul className="recipe-grid">
-          {recipes.map((recipe) => {
-            const ingredients = allIngredients(recipe.ingredients);
-            return (
+          {recipes.map((recipe) => (
             <li key={recipe.id}>
               <article className="card recipe-card">
                 <h2>
                   <Link href={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                 </h2>
-                <p className="recipe-meta">
-                  {ingredients.length}{" "}
-                  {ingredients.length === 1 ? "ingredient" : "ingredients"}:{" "}
-                  {ingredients.join(", ")}
-                </p>
                 <div className="recipe-card-actions">
                   <form action={deleteRecipe}>
                     <input type="hidden" name="id" value={recipe.id} />
@@ -64,8 +56,7 @@ export default async function RecipesPage() {
                 </div>
               </article>
             </li>
-            );
-          })}
+          ))}
         </ul>
       )}
     </>
