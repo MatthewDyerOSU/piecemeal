@@ -749,13 +749,15 @@ legend {
   gap: var(--space-2);
 }
 
-.pill-checkbox {
+.pill-checkbox,
+.field label.pill-checkbox {
   display: inline-flex;
   align-items: center;
   min-height: var(--target-min);
   border-radius: 999px;
   border: 2px solid var(--pill-bg);
   padding: 0 var(--space-4);
+  margin-bottom: 0;
   color: var(--pill-bg);
   font-weight: 700;
   cursor: pointer;
@@ -782,8 +784,24 @@ legend {
   min-height: 1.65em;
 }
 
-.picked-result p {
-  font-size: 1.05rem;
+.picked-card {
+  margin-top: var(--space-3);
+  max-width: var(--narrow-width);
+}
+
+.picked-card .picked-lede {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1);
+}
+
+.picked-card .picked-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 /* --- Checkbox groups (tags, saved-recipe filters) --- */

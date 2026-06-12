@@ -37,15 +37,19 @@ export default function RandomPicker() {
       </p>
       <div aria-live="polite" className="picked-result">
         {state.status === "picked" ? (
-          <p>
-            How about{" "}
-            <Link href={`/recipes/${state.id}`}>{state.name}</Link>?
-          </p>
+          <div className="card picked-card">
+            <p className="picked-lede">How about…</p>
+            <p className="picked-name">
+              <Link href={`/recipes/${state.id}`}>{state.name}</Link>
+            </p>
+          </div>
         ) : state.status === "none" ? (
-          <p>
-            There were no recipes to pick from. Try different tags, or{" "}
-            <Link href="/recipes/new">add a recipe</Link>.
-          </p>
+          <div className="card picked-card">
+            <p>
+              There were no recipes to pick from. Try different tags, or{" "}
+              <Link href="/recipes/new">add a recipe</Link>.
+            </p>
+          </div>
         ) : null}
       </div>
     </form>
