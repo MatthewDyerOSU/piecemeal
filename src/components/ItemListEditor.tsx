@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import PasteList from "./PasteList";
 
 type Props = {
   label: string;
@@ -13,6 +14,8 @@ type Props = {
   help: string;
   /** Render the committed items as a numbered list (steps) instead of bullets. */
   ordered?: boolean;
+  /** Offer a paste-a-list disclosure for adding many items at once. */
+  allowPaste?: boolean;
   error?: string;
   initialItems?: string[];
 };
@@ -29,6 +32,7 @@ export default function ItemListEditor({
   name,
   help,
   ordered = false,
+  allowPaste = false,
   error,
   initialItems = [],
 }: Props) {
@@ -91,6 +95,17 @@ export default function ItemListEditor({
           Add {noun}
         </button>
       </div>
+      {allowPaste ? (
+        <PasteList
+          noun={`${noun}s`}
+          onAdd={(pasted) => {
+            setItems((previous) => [...previous, ...pasted]);
+            setAnnouncement(
+              `Added ${pasted.length} ${pasted.length === 1 ? noun : `${noun}s`} from pasted text.`
+            );
+          }}
+        />
+      ) : null}
       {error ? (
         <p id={`${id}-error`} role="alert" className="field-error">
           {error}

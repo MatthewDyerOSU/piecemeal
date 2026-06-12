@@ -16,7 +16,9 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   confirmation first).
 - **Add a recipe** — name, then ingredients and instruction steps entered
   one at a time into removable lists (bulleted ingredients, numbered steps),
-  with accessible inline validation and screen-reader announcements.
+  with accessible inline validation and screen-reader announcements. A
+  paste-a-list option adds many at once from a copied document, stripping
+  bullets and numbering automatically.
   Ingredients can be split into named groups (e.g. "Salmon" / "Avocado
   salsa") that render as their own subheaded lists on the recipe page.
 - **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
