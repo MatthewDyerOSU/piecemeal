@@ -1,9 +1,16 @@
+import type { IngredientGroup } from "@/types/recipe";
+
 /** Splits a comma-separated ingredient string into trimmed, non-empty terms. */
 export function parseIngredients(input: string): string[] {
   return input
     .split(",")
     .map((term) => term.trim())
     .filter((term) => term.length > 0);
+}
+
+/** Flattens a recipe's ingredient groups into a single list of items. */
+export function allIngredients(groups: IngredientGroup[]): string[] {
+  return groups.flatMap((group) => group.items);
 }
 
 /**

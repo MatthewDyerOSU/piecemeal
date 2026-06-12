@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { parseIngredients } from "@/lib/recipes";
+import type { IngredientGroup } from "@/types/recipe";
 
 export type RecipeFormState = {
   errors: {
@@ -12,6 +13,50 @@ export type RecipeFormState = {
     form?: string;
   };
 };
+
+function listValues(formData: FormData, name: string): string[] {
+  return formData
+    .getAll(name)
+    .map((value) => String(value).trim())
+    .filter((value) => value.length > 0);
+}
+
+/**
+ * Ingredient groups arrive as JSON from the IngredientGroupsEditor (which
+ * already includes typed-but-not-added drafts). Without JavaScript only
+ * the plain `ingredients-draft` text box submits; it is comma-split into
+ * a single unnamed group.
+ */
+function parseIngredientGroups(formData: FormData): IngredientGroup[] {
+  const raw = formData.get("ingredients-json");
+  if (typeof raw === "string" && raw.length > 0) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((group) => ({
+            name: String(
+              (group as { name?: unknown })?.name ?? ""
+            ).trim(),
+            items: Array.isArray((group as { items?: unknown })?.items)
+              ? ((group as { items: unknown[] }).items as unknown[])
+                  .map((item) => String(item).trim())
+                  .filter((item) => item.length > 0)
+              : [],
+          }))
+          .filter((group) => group.items.length > 0);
+      }
+    } catch {
+      // Malformed JSON: treat as no ingredients; validation reports it.
+    }
+    return [];
+  }
+
+  const draft = parseIngredients(
+    String(formData.get("ingredients-draft") ?? "")
+  );
+  return draft.length > 0 ? [{ name: "", items: draft }] : [];
+}
 
 export async function createRecipe(
   _previousState: RecipeFormState,
@@ -27,16 +72,23 @@ export async function createRecipe(
   }
 
   const name = String(formData.get("name") ?? "").trim();
-  const ingredients = parseIngredients(String(formData.get("ingredients") ?? ""));
-  const instructions = String(formData.get("instructions") ?? "").trim();
+
+  const ingredients = parseIngredientGroups(formData);
+
+  // Committed steps, plus whatever is still typed in the entry box so it
+  // is not lost on save.
+  const steps = listValues(formData, "steps");
+  const stepDraft = String(formData.get("steps-draft") ?? "").trim();
+  if (stepDraft) {
+    steps.push(stepDraft);
+  }
 
   const errors: RecipeFormState["errors"] = {};
   if (!name) {
     errors.name = "Enter a name for the recipe.";
   }
   if (ingredients.length === 0) {
-    errors.ingredients =
-      "Enter at least one ingredient, separated by commas.";
+    errors.ingredients = "Add at least one ingredient.";
   }
   if (Object.keys(errors).length > 0) {
     return { errors };
@@ -46,7 +98,7 @@ export async function createRecipe(
     user_id: user.id,
     name,
     ingredients,
-    instructions,
+    instructions: steps,
   });
 
   if (error) {
