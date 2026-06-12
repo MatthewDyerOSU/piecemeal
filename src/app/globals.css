@@ -209,23 +209,24 @@ ol {
   margin: 0 auto;
   padding: var(--space-2) var(--space-4);
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-3);
 }
 
-/* Below the full content width, the nav drops to its own full-width row
-   under the wordmark and account controls, keeping both rows cleanly
-   aligned instead of wrapping arbitrarily. */
-@media (max-width: 55.99rem) {
-  .site-header-inner nav {
-    order: 3;
-    width: 100%;
+/* Below the single-row breakpoint the header stacks, everything
+   left-aligned — never two rows with opposite alignment. */
+@media (max-width: 59.99rem) {
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .nav-list a {
+  .auth-area {
+    margin-left: 0;
+  }
+
+  .nav-list li:first-child a {
     padding-left: 0;
-    padding-right: var(--space-2);
   }
 }
 
@@ -580,6 +581,17 @@ legend {
   max-width: var(--narrow-width);
 }
 
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.paste-panel {
+  max-width: var(--narrow-width);
+}
+
 .paste-list label {
   display: block;
   font-weight: 700;
@@ -602,6 +614,21 @@ legend {
 
 .alert-error {
   color: var(--color-error);
+}
+
+.alert a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.error-summary:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.error-summary h2 {
+  font-size: 1rem;
+  margin-bottom: var(--space-2);
 }
 
 .alert-success {
@@ -651,12 +678,65 @@ legend {
   gap: var(--space-2);
 }
 
-/* --- Home: dinner picker --- */
+/* --- Random picker result --- */
 
-.decide {
+.picked-result {
+  min-height: 1.65em;
+}
+
+.picked-result p {
+  font-size: 1.05rem;
+}
+
+/* --- Checkbox groups (tags, saved-recipe filters) --- */
+
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  max-width: var(--narrow-width);
+}
+
+.checkbox-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  cursor: pointer;
+}
+
+.checkbox-option input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-accent);
+}
+
+/* --- Saved recipes: filter + random picker --- */
+
+.filter-section {
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border);
   margin-bottom: var(--space-4);
+}
+
+.filter-form {
+  margin-bottom: var(--space-3);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.recipe-tag-list {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.recipe-tag-list .chip {
+  text-transform: capitalize;
 }
 
 /* --- Household --- */

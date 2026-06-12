@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { IngredientGroup } from "@/types/recipe";
-import PasteList from "./PasteList";
+import PasteList, { PastePanel } from "./PasteList";
 import EditableItemList from "./EditableItemList";
 
 type GroupStatus =
@@ -32,13 +32,28 @@ type GroupState = {
  * JavaScript the base text box still submits as `ingredients-draft`,
  * which the server comma-splits into a single unnamed group.
  */
-export default function IngredientGroupsEditor({ error }: { error?: string }) {
+export default function IngredientGroupsEditor({
+  error,
+  inputId,
+  onHasIngredientsChange,
+}: {
+  error?: string;
+  /** Stable id for the base ingredient input so the form's error summary
+      can move focus to it. */
+  inputId?: string;
+  /** Reports whether the editor currently holds at least one ingredient
+      (committed or drafted), so the form can clear the requirement error
+      live once it is satisfied. */
+  onHasIngredientsChange?: (hasIngredients: boolean) => void;
+}) {
   const id = useId();
   const nextKey = useRef(1);
   const [baseItems, setBaseItems] = useState<string[]>([]);
   const [baseDraft, setBaseDraft] = useState("");
+  const [basePasteOpen, setBasePasteOpen] = useState(false);
   const [groups, setGroups] = useState<GroupState[]>([]);
   const [announcement, setAnnouncement] = useState("");
+  const baseInputId = inputId ?? `${id}-base-item`;
 
   // After-render focus management: actions register a target element key
   // here, and the effect below focuses it once it exists.
@@ -81,6 +96,13 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
       ],
     })),
   ].filter((group) => group.items.length > 0);
+
+  const hasIngredients = serialized.length > 0;
+  useEffect(() => {
+    onHasIngredientsChange?.(hasIngredients);
+    // The callback is a state setter with stable identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasIngredients]);
 
   function update(key: number, patch: Partial<GroupState>) {
     setGroups((previous) =>
@@ -182,17 +204,14 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
 
   return (
     <fieldset className="field">
-      <legend>Ingredients</legend>
+      <legend>
+        Ingredients <span aria-hidden="true">*</span>
+      </legend>
       <p className="field-help" id={`${id}-help`}>
         Add ingredients one at a time. For example: 2 cups flour. If parts
         of the recipe have their own ingredients, like a sauce or a salsa,
         add an ingredient group for each part.
       </p>
-      {error ? (
-        <p id={`${id}-error`} role="alert" className="field-error">
-          {error}
-        </p>
-      ) : null}
       <p aria-live="polite" className="visually-hidden">
         {announcement}
       </p>
@@ -204,15 +223,21 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
       />
 
       <div className="ingredient-group-plain">
-        <label htmlFor={`${id}-base-item`}>
+        <label htmlFor={baseInputId}>
           {groups.length > 0 ? "Ungrouped ingredients" : "Add an ingredient"}
         </label>
+        {error ? (
+          <p id={`${baseInputId}-error`} className="field-error">
+            {error}
+          </p>
+        ) : null}
         <div className="item-entry">
           <input
             ref={register("base-item")}
             type="text"
-            id={`${id}-base-item`}
+            id={baseInputId}
             name="ingredients-draft"
+            aria-required="true"
             value={baseDraft}
             onChange={(event) => setBaseDraft(event.target.value)}
             onKeyDown={(event) => {
@@ -221,7 +246,9 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
                 addBaseItem();
               }
             }}
-            aria-describedby={error ? `${id}-help ${id}-error` : `${id}-help`}
+            aria-describedby={
+              error ? `${id}-help ${baseInputId}-error` : `${id}-help`
+            }
             aria-invalid={error ? true : undefined}
             autoComplete="off"
           />
@@ -233,15 +260,6 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
             Add ingredient
           </button>
         </div>
-        <PasteList
-          noun="ingredients"
-          onAdd={(pasted) => {
-            setBaseItems((previous) => [...previous, ...pasted]);
-            setAnnouncement(
-              `Added ${pasted.length} ingredient${pasted.length === 1 ? "" : "s"} from pasted text.`
-            );
-          }}
-        />
         <EditableItemList
           items={baseItems}
           onChange={(next, message) => {
@@ -250,6 +268,43 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
           }}
           onEmpty={() => requestFocus("base-item")}
         />
+        <div className="editor-actions">
+          <button
+            ref={register("base-paste-toggle")}
+            type="button"
+            className="button button-secondary button-compact"
+            aria-expanded={basePasteOpen}
+            aria-controls={`${id}-base-paste`}
+            onClick={() => setBasePasteOpen((previous) => !previous)}
+          >
+            {basePasteOpen
+              ? "Hide pasted ingredients"
+              : "Paste a list of ingredients"}
+          </button>
+          <button
+            ref={register("add-group")}
+            type="button"
+            className="button button-secondary button-compact"
+            onClick={addGroup}
+          >
+            Add ingredient group
+          </button>
+        </div>
+        {basePasteOpen ? (
+          <div id={`${id}-base-paste`}>
+            <PastePanel
+              noun="ingredients"
+              onAdd={(pasted) => {
+                setBaseItems((previous) => [...previous, ...pasted]);
+                setAnnouncement(
+                  `Added ${pasted.length} ingredient${pasted.length === 1 ? "" : "s"} from pasted text.`
+                );
+                setBasePasteOpen(false);
+                requestFocus("base-paste-toggle");
+              }}
+            />
+          </div>
+        ) : null}
       </div>
 
       {groups.map((group) => (
@@ -409,14 +464,6 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
         </fieldset>
       ))}
 
-      <button
-        ref={register("add-group")}
-        type="button"
-        className="button button-secondary"
-        onClick={addGroup}
-      >
-        Add ingredient group
-      </button>
     </fieldset>
   );
 }

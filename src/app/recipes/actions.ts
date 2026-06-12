@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { parseIngredients } from "@/lib/recipes";
+import {
+  matchesTagFilters,
+  parseIngredients,
+  RECIPE_TAGS,
+  sanitizeTagFilters,
+} from "@/lib/recipes";
 import type { IngredientGroup } from "@/types/recipe";
 
 export type RecipeFormState = {
@@ -71,7 +76,14 @@ export async function createRecipe(
     redirect("/login");
   }
 
-  const name = String(formData.get("name") ?? "").trim();
+  // The field is named recipe-name (not "name") so browsers and password
+  // managers stop offering contact autofill for it.
+  const name = String(formData.get("recipe-name") ?? "").trim();
+
+  const tags = formData
+    .getAll("tags")
+    .map((value) => String(value))
+    .filter((value) => (RECIPE_TAGS as readonly string[]).includes(value));
 
   const ingredients = parseIngredientGroups(formData);
 
@@ -99,6 +111,7 @@ export async function createRecipe(
     name,
     ingredients,
     instructions: steps,
+    tags,
   });
 
   if (error) {
@@ -127,4 +140,47 @@ export async function deleteRecipe(formData: FormData) {
   }
 
   revalidatePath("/recipes");
+}
+
+export type RandomPickState =
+  | { status: "idle" }
+  | { status: "none" }
+  | { status: "picked"; id: string; name: string };
+
+export async function pickRandomRecipe(
+  previous: RandomPickState,
+  formData: FormData
+): Promise<RandomPickState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const filters = sanitizeTagFilters(
+    formData.getAll("filter").map((value) => String(value))
+  );
+
+  const { data } = await supabase.from("recipes").select("id, name, tags");
+  const candidates = (
+    (data as { id: string; name: string; tags: string[] }[]) ?? []
+  ).filter((recipe) => matchesTagFilters(recipe.tags ?? [], filters));
+
+  if (candidates.length === 0) {
+    return { status: "none" };
+  }
+
+  // Never serve the same recipe twice in a row (unless it is the only
+  // candidate). This also guarantees the live region's text changes, so
+  // screen readers always announce a repeat press.
+  const pool =
+    previous.status === "picked" && candidates.length > 1
+      ? candidates.filter((candidate) => candidate.id !== previous.id)
+      : candidates;
+
+  const choice = pool[Math.floor(Math.random() * pool.length)];
+  return { status: "picked", id: choice.id, name: choice.name };
 }

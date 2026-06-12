@@ -27,7 +27,10 @@ export default async function NavBar() {
         <div className="auth-area">
           {user ? (
             <>
-              <span className="user-name">Signed in as {displayName}</span>
+              <span className="user-name">
+                <span className="visually-hidden">Signed in as </span>
+                {displayName}
+              </span>
               <form action="/auth/signout" method="post">
                 <button type="submit" className="button button-secondary">
                   Sign out

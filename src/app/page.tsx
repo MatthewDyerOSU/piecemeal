@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { allIngredients, parseIngredients, recipeMatches } from "@/lib/recipes";
 import type { Recipe } from "@/types/recipe";
 import SearchForm from "@/components/SearchForm";
+import RandomPicker from "@/components/RandomPicker";
 
 function toArray(value: string | string[] | undefined): string[] {
   return Array.isArray(value) ? value : value ? [value] : [];
@@ -14,7 +15,6 @@ export default async function HomePage({
   searchParams: Promise<{
     ingredients?: string | string[];
     "ingredients-draft"?: string | string[];
-    picked?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -81,14 +81,7 @@ export default async function HomePage({
 
   return (
     <>
-      <h1>What&apos;s for dinner?</h1>
-
-      {params.picked === "none" ? (
-        <p role="status" className="alert">
-          There are no saved recipes to pick from yet.{" "}
-          <Link href="/recipes/new">Add your first recipe</Link>.
-        </p>
-      ) : null}
+      <h1>Find recipes</h1>
 
       <section aria-labelledby="decide-heading" className="decide">
         <h2 className="eyebrow" id="decide-heading">
@@ -98,13 +91,7 @@ export default async function HomePage({
           Let Piece-Meal pick dinner at random from everything you and your
           household have saved.
         </p>
-        <p>
-          {/* prefetch={false}: prefetching would pin the "random" choice
-              before the click. */}
-          <Link className="button" href="/recipes/random" prefetch={false}>
-            Just decide for us
-          </Link>
-        </p>
+        <RandomPicker />
       </section>
 
       <section aria-labelledby="search-heading">
@@ -112,7 +99,7 @@ export default async function HomePage({
           Search by ingredient
         </h2>
         <p>
-          Or search your saved recipes for ones that use the ingredients you
+          Search your saved recipes for ones that use the ingredients you
           have on hand.
         </p>
 

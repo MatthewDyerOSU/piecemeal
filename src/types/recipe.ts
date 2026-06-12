@@ -10,5 +10,6 @@ export type Recipe = {
   name: string;
   ingredients: IngredientGroup[];
   instructions: string[];
+  tags: string[];
   created_at: string;
 };
