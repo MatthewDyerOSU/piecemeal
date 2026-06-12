@@ -1,38 +1,40 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { createRecipe, type RecipeFormState } from "@/app/recipes/actions";
-import { RECIPE_TAGS } from "@/lib/recipes";
+import {
+  createRecipe,
+  updateRecipe,
+  type RecipeFormState,
+} from "@/app/recipes/actions";
+import type { Recipe } from "@/types/recipe";
 import ItemListEditor from "@/components/ItemListEditor";
 import IngredientGroupsEditor from "@/components/IngredientGroupsEditor";
+import TagPills from "@/components/TagPills";
 
 const initialState: RecipeFormState = { errors: {} };
 
-const TAG_LABELS: Record<string, string> = {
-  healthy: "Healthy",
-  quick: "Quick",
-  easy: "Easy",
-};
-
 /**
- * Error flow, designed with screen-reader users in mind: on a failed
- * submission focus moves straight into the first erroring field (whose
- * label and error are read immediately via aria-describedby), each
- * remaining invalid field announces its own error when tabbed into, and
- * a short list just before the submit button links back to any fields
- * still in error — entries disappear as fields are fixed.
+ * Shared create/edit recipe form. Error flow, designed with screen-reader
+ * users in mind: on a failed submission focus moves straight into the
+ * first erroring field (whose label and error are read immediately via
+ * aria-describedby), each remaining invalid field announces its own error
+ * when tabbed into, and a short list just before the submit button links
+ * back to any fields still in error — entries disappear as fields are
+ * fixed.
  */
-export default function NewRecipeForm() {
+export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
   const [state, formAction, pending] = useActionState(
-    createRecipe,
+    recipe ? updateRecipe : createRecipe,
     initialState
   );
   const { errors } = state;
 
   // Live "is it fixed yet" tracking, so the bottom list only shows what
   // is still broken.
-  const [nameValue, setNameValue] = useState("");
-  const [hasIngredients, setHasIngredients] = useState(false);
+  const [nameValue, setNameValue] = useState(recipe?.name ?? "");
+  const [hasIngredients, setHasIngredients] = useState(
+    Boolean(recipe && recipe.ingredients.length > 0)
+  );
 
   const nameInvalid = Boolean(errors.name) && nameValue.trim() === "";
   const ingredientsInvalid = Boolean(errors.ingredients) && !hasIngredients;
@@ -64,6 +66,10 @@ export default function NewRecipeForm() {
       <p className="field-help">
         Required fields are marked with an asterisk (*).
       </p>
+
+      {recipe ? (
+        <input type="hidden" name="recipe-id" value={recipe.id} />
+      ) : null}
 
       {errors.form ? (
         <div
@@ -103,6 +109,7 @@ export default function NewRecipeForm() {
         error={ingredientsInvalid ? errors.ingredients : undefined}
         inputId="recipe-ingredients"
         onHasIngredientsChange={setHasIngredients}
+        initialGroups={recipe?.ingredients}
       />
 
       <ItemListEditor
@@ -112,23 +119,22 @@ export default function NewRecipeForm() {
         help="Add the steps one at a time, in order. They are saved as a numbered list."
         ordered
         allowPaste
+        initialItems={recipe?.instructions}
       />
 
-      <fieldset className="field">
-        <legend>Tags</legend>
+      <div className="field">
+        <p className="field-label-like">Tags</p>
         <p className="field-help" id="recipe-tags-help">
           Optional. Tags can be used to filter recipes and to narrow the
           random dinner picker.
         </p>
-        <div className="checkbox-list" aria-describedby="recipe-tags-help">
-          {RECIPE_TAGS.map((tag) => (
-            <label key={tag} className="checkbox-option">
-              <input type="checkbox" name="tags" value={tag} />
-              {TAG_LABELS[tag]}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+        <TagPills
+          name="tags"
+          legend="Tags"
+          describedBy="recipe-tags-help"
+          defaultSelected={recipe?.tags ?? []}
+        />
+      </div>
 
       {remaining.length > 0 ? (
         <section
@@ -155,7 +161,7 @@ export default function NewRecipeForm() {
       ) : null}
 
       <button type="submit" className="button" disabled={pending}>
-        {pending ? "Saving…" : "Save recipe"}
+        {pending ? "Saving…" : recipe ? "Save changes" : "Save recipe"}
       </button>
     </form>
   );

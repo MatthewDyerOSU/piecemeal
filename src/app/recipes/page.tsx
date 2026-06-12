@@ -5,20 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
 import { matchesTagFilters, sanitizeTagFilters } from "@/lib/recipes";
 import DeleteRecipeButton from "@/components/DeleteRecipeButton";
+import TagPills from "@/components/TagPills";
 import { deleteRecipe } from "./actions";
 
 export const metadata: Metadata = {
   title: "Saved recipes",
 };
-
-const FILTER_OPTIONS: { value: string; label: string }[] = [
-  { value: "healthy", label: "Healthy" },
-  { value: "quick", label: "Quick" },
-  { value: "easy", label: "Easy" },
-  { value: "not-healthy", label: "Not healthy" },
-  { value: "not-quick", label: "Not quick" },
-  { value: "not-easy", label: "Not easy" },
-];
 
 function toArray(value: string | string[] | undefined): string[] {
   return Array.isArray(value) ? value : value ? [value] : [];
@@ -59,22 +51,11 @@ export default async function RecipesPage({
           Filter
         </h2>
         <form method="get" action="/recipes" className="filter-form">
-          <fieldset>
-            <legend className="visually-hidden">Filter by tag</legend>
-            <div className="checkbox-list">
-              {FILTER_OPTIONS.map((option) => (
-                <label key={option.value} className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    name="filter"
-                    value={option.value}
-                    defaultChecked={filters.includes(option.value)}
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <TagPills
+            name="filter"
+            legend="Filter by tag"
+            defaultSelected={filters}
+          />
           <div className="filter-actions">
             <button type="submit" className="button button-secondary">
               Apply filters
@@ -109,20 +90,26 @@ export default async function RecipesPage({
                 <h2>
                   <Link href={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                 </h2>
+                {(recipe.tags ?? []).length > 0 ? (
+                  <ul className="tag-list">
+                    {recipe.tags.map((tag) => (
+                      <li className={`tag-pill pill-${tag}`} key={tag}>
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
                 <div className="recipe-card-actions">
+                  <Link
+                    className="button button-secondary"
+                    href={`/recipes/${recipe.id}/edit`}
+                  >
+                    Edit<span className="visually-hidden"> {recipe.name}</span>
+                  </Link>
                   <form action={deleteRecipe}>
                     <input type="hidden" name="id" value={recipe.id} />
                     <DeleteRecipeButton name={recipe.name} />
                   </form>
-                  {(recipe.tags ?? []).length > 0 ? (
-                    <ul className="chip-list recipe-tag-list">
-                      {recipe.tags.map((tag) => (
-                        <li className="chip" key={tag}>
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
                 </div>
               </article>
             </li>

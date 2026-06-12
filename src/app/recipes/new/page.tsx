@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import NewRecipeForm from "@/components/NewRecipeForm";
+import RecipeForm from "@/components/RecipeForm";
 
 export const metadata: Metadata = {
   title: "Add a recipe",
@@ -20,7 +20,7 @@ export default async function NewRecipePage() {
   return (
     <section className="page-narrow">
       <h1>Add a recipe</h1>
-      <NewRecipeForm />
+      <RecipeForm />
     </section>
   );
 }

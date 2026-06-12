@@ -36,19 +36,20 @@ export default async function RecipeDetailPage({
         <Link href="/recipes">Back to saved recipes</Link>
       </p>
 
-      <h1>{recipe.name}</h1>
+      <div className="title-row">
+        <h1>{recipe.name}</h1>
+        <CookingMode />
+      </div>
 
       {(recipe.tags ?? []).length > 0 ? (
-        <ul className="chip-list recipe-tag-list">
+        <ul className="tag-list">
           {recipe.tags.map((tag) => (
-            <li className="chip" key={tag}>
+            <li className={`tag-pill pill-${tag}`} key={tag}>
               {tag}
             </li>
           ))}
         </ul>
       ) : null}
-
-      <CookingMode />
 
       <section aria-labelledby="ingredients-heading">
         <h2 className="eyebrow" id="ingredients-heading">

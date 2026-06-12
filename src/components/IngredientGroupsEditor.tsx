@@ -36,6 +36,7 @@ export default function IngredientGroupsEditor({
   error,
   inputId,
   onHasIngredientsChange,
+  initialGroups,
 }: {
   error?: string;
   /** Stable id for the base ingredient input so the form's error summary
@@ -45,13 +46,33 @@ export default function IngredientGroupsEditor({
       (committed or drafted), so the form can clear the requirement error
       live once it is satisfied. */
   onHasIngredientsChange?: (hasIngredients: boolean) => void;
+  /** Pre-fills the editor when editing an existing recipe: unnamed groups
+      become the base list, named groups start in their collapsed "done"
+      state. */
+  initialGroups?: IngredientGroup[];
 }) {
   const id = useId();
-  const nextKey = useRef(1);
-  const [baseItems, setBaseItems] = useState<string[]>([]);
+  const initialNamed = (initialGroups ?? []).filter((group) => group.name);
+  const nextKey = useRef(initialNamed.length + 1);
+  const [baseItems, setBaseItems] = useState<string[]>(() =>
+    (initialGroups ?? [])
+      .filter((group) => !group.name)
+      .flatMap((group) => group.items)
+  );
   const [baseDraft, setBaseDraft] = useState("");
   const [basePasteOpen, setBasePasteOpen] = useState(false);
-  const [groups, setGroups] = useState<GroupState[]>([]);
+  const [groups, setGroups] = useState<GroupState[]>(() =>
+    initialNamed.map((group, index) => ({
+      key: index + 1,
+      name: group.name,
+      nameDraft: group.name,
+      renaming: false,
+      nameError: null,
+      items: [...group.items],
+      itemDraft: "",
+      status: "done",
+    }))
+  );
   const [announcement, setAnnouncement] = useState("");
   const baseInputId = inputId ?? `${id}-base-item`;
 

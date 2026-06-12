@@ -63,19 +63,7 @@ function parseIngredientGroups(formData: FormData): IngredientGroup[] {
   return draft.length > 0 ? [{ name: "", items: draft }] : [];
 }
 
-export async function createRecipe(
-  _previousState: RecipeFormState,
-  formData: FormData
-): Promise<RecipeFormState> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
+function parseRecipeForm(formData: FormData) {
   // The field is named recipe-name (not "name") so browsers and password
   // managers stop offering contact autofill for it.
   const name = String(formData.get("recipe-name") ?? "").trim();
@@ -102,6 +90,25 @@ export async function createRecipe(
   if (ingredients.length === 0) {
     errors.ingredients = "Add at least one ingredient.";
   }
+
+  return { name, tags, ingredients, steps, errors };
+}
+
+export async function createRecipe(
+  _previousState: RecipeFormState,
+  formData: FormData
+): Promise<RecipeFormState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { name, tags, ingredients, steps, errors } =
+    parseRecipeForm(formData);
   if (Object.keys(errors).length > 0) {
     return { errors };
   }
@@ -122,6 +129,46 @@ export async function createRecipe(
 
   revalidatePath("/recipes");
   redirect("/recipes");
+}
+
+export async function updateRecipe(
+  _previousState: RecipeFormState,
+  formData: FormData
+): Promise<RecipeFormState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const recipeId = String(formData.get("recipe-id") ?? "");
+  if (!recipeId) {
+    return { errors: { form: "Could not tell which recipe to update." } };
+  }
+
+  const { name, tags, ingredients, steps, errors } =
+    parseRecipeForm(formData);
+  if (Object.keys(errors).length > 0) {
+    return { errors };
+  }
+
+  const { error } = await supabase
+    .from("recipes")
+    .update({ name, ingredients, instructions: steps, tags })
+    .eq("id", recipeId);
+
+  if (error) {
+    return {
+      errors: { form: `Could not save the recipe: ${error.message}` },
+    };
+  }
+
+  revalidatePath("/recipes");
+  revalidatePath(`/recipes/${recipeId}`);
+  redirect(`/recipes/${recipeId}`);
 }
 
 export async function deleteRecipe(formData: FormData) {

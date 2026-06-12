@@ -1,18 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-type Status = "idle" | "active" | "error";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 /**
- * Keeps the screen awake while cooking, using the Screen Wake Lock API.
- * The lock is released automatically by the browser when the tab is hidden,
- * so it is re-acquired on visibilitychange while cooking mode is on.
- * Requires a secure context (HTTPS); unsupported browsers get an
- * explanation instead of a broken button.
+ * Compact cooking-mode switch: keeps the screen awake while cooking via
+ * the Screen Wake Lock API. The control is a labeled role="switch"
+ * button (state announced as on/off automatically), with what it does
+ * explained to screen readers via aria-describedby. The lock is released
+ * by the browser when the tab is hidden, so it is re-acquired on
+ * visibilitychange while the switch is on. Requires a secure context;
+ * unsupported browsers get a short note instead of a broken control.
  */
 export default function CookingMode() {
-  const [status, setStatus] = useState<Status>("idle");
+  const id = useId();
+  const [active, setActive] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [supported, setSupported] = useState<boolean | null>(null);
   const lockRef = useRef<WakeLockSentinel | null>(null);
   // Tracks whether the user wants cooking mode on, independent of whether
@@ -26,13 +28,15 @@ export default function CookingMode() {
       lock.addEventListener("release", () => {
         lockRef.current = null;
         if (!wantedRef.current) {
-          setStatus("idle");
+          setActive(false);
         }
       });
-      setStatus("active");
+      setActive(true);
+      setFailed(false);
     } catch {
       wantedRef.current = false;
-      setStatus("error");
+      setActive(false);
+      setFailed(true);
     }
   }, []);
 
@@ -58,11 +62,11 @@ export default function CookingMode() {
   }, [acquire]);
 
   async function toggle() {
-    if (status === "active") {
+    if (active) {
       wantedRef.current = false;
       await lockRef.current?.release().catch(() => {});
       lockRef.current = null;
-      setStatus("idle");
+      setActive(false);
     } else {
       wantedRef.current = true;
       await acquire();
@@ -70,45 +74,41 @@ export default function CookingMode() {
   }
 
   if (supported === null) {
-    // Not yet known (first render / no JavaScript); render nothing rather
-    // than a control that cannot work.
     return null;
   }
 
-  return (
-    <section className="card cooking-mode" aria-labelledby="cooking-mode-heading">
-      <h2 className="eyebrow" id="cooking-mode-heading">
-        Cooking mode
-      </h2>
+  if (!supported) {
+    return (
+      <p className="field-help cooking-unsupported">
+        Cooking mode (keeping the screen awake) is not supported by this
+        browser.
+      </p>
+    );
+  }
 
-      {supported ? (
-        <>
-          <p>
-            Keeps your screen awake while you cook, so the display does not
-            turn off while your hands are busy.
-          </p>
-          <p>
-            <button type="button" className="button" onClick={toggle}>
-              {status === "active"
-                ? "Turn off cooking mode"
-                : "Turn on cooking mode"}
-            </button>
-          </p>
-          <p className="cooking-mode-status" aria-live="polite">
-            {status === "active"
-              ? "Cooking mode is on. Your screen will stay awake."
-              : status === "error"
-              ? "Cooking mode could not be turned on. Check that your battery saver is off and try again."
-              : "Cooking mode is off."}
-          </p>
-        </>
-      ) : (
-        <p>
-          Your browser does not support keeping the screen awake, so cooking
-          mode is unavailable. You can change your device&apos;s screen
-          timeout in its display settings instead.
-        </p>
-      )}
-    </section>
+  return (
+    <div className="cooking-toggle-wrap">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={active}
+        aria-describedby={`${id}-desc`}
+        className="cooking-toggle"
+        onClick={toggle}
+      >
+        <span>Cooking mode</span>
+        <span className="switch-track" aria-hidden="true">
+          <span className="switch-thumb" />
+        </span>
+      </button>
+      <span id={`${id}-desc`} className="visually-hidden">
+        When on, keeps your screen awake while you cook.
+      </span>
+      <p aria-live="polite" className={failed ? "field-error" : "visually-hidden"}>
+        {failed
+          ? "Could not keep the screen awake. Check that battery saver is off and try again."
+          : ""}
+      </p>
+    </div>
   );
 }
