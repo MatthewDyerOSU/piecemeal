@@ -207,25 +207,30 @@ ol {
 .site-header-inner {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: var(--space-2) var(--space-4);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-1);
 }
 
-/* Below the full content width, the nav drops to its own full-width row
-   under the wordmark and account controls, keeping both rows cleanly
-   aligned instead of wrapping arbitrarily. */
-@media (max-width: 55.99rem) {
-  .site-header-inner nav {
-    order: 3;
-    width: 100%;
-  }
+/* Deliberate two-row header at every width: brand left and account
+   controls right on the first row, navigation on its own row below. */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  flex-wrap: wrap;
+}
 
-  .nav-list a {
-    padding-left: 0;
-    padding-right: var(--space-2);
+.nav-list a:first-child,
+.site-header-inner nav .nav-list li:first-child a {
+  padding-left: 0;
+}
+
+/* On very small screens, stack the top row left-aligned so nothing sits
+   offset to the right. */
+@media (max-width: 30rem) {
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -580,6 +585,17 @@ legend {
   max-width: var(--narrow-width);
 }
 
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.paste-panel {
+  max-width: var(--narrow-width);
+}
+
 .paste-list label {
   display: block;
   font-weight: 700;
@@ -651,12 +667,55 @@ legend {
   gap: var(--space-2);
 }
 
-/* --- Home: dinner picker --- */
+/* --- Checkbox groups (tags, saved-recipe filters) --- */
 
-.decide {
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  max-width: var(--narrow-width);
+}
+
+.checkbox-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  cursor: pointer;
+}
+
+.checkbox-option input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-accent);
+}
+
+/* --- Saved recipes: filter + random picker --- */
+
+.filter-section {
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border);
   margin-bottom: var(--space-4);
+}
+
+.filter-form {
+  margin-bottom: var(--space-3);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.recipe-tag-list {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.recipe-tag-list .chip {
+  text-transform: capitalize;
 }
 
 /* --- Household --- */

@@ -13,7 +13,9 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
 - **Find recipes** — add the ingredients you have one at a time and see
   which of your saved recipes use all of them (results have shareable URLs).
 - **Saved recipes** — browse, open, and delete your recipes (deletes ask for
-  confirmation first).
+  confirmation first). Recipes can be tagged healthy/quick/easy, the list
+  filters on each tag and its negation, and a "Just decide for us" button
+  picks a random recipe from whatever matches the current filters.
 - **Add a recipe** — name, then ingredients and instruction steps entered
   one at a time into removable lists (bulleted ingredients, numbered steps),
   with accessible inline validation and screen-reader announcements. A

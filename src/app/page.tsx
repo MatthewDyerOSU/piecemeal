@@ -14,7 +14,6 @@ export default async function HomePage({
   searchParams: Promise<{
     ingredients?: string | string[];
     "ingredients-draft"?: string | string[];
-    picked?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -81,46 +80,16 @@ export default async function HomePage({
 
   return (
     <>
-      <h1>What&apos;s for dinner?</h1>
+      <h1>Find recipes</h1>
+      <p>
+        Search your saved recipes for ones that use the ingredients you have
+        on hand.
+      </p>
 
-      {params.picked === "none" ? (
-        <p role="status" className="alert">
-          There are no saved recipes to pick from yet.{" "}
-          <Link href="/recipes/new">Add your first recipe</Link>.
-        </p>
-      ) : null}
-
-      <section aria-labelledby="decide-heading" className="decide">
-        <h2 className="eyebrow" id="decide-heading">
-          Can&apos;t decide?
-        </h2>
-        <p>
-          Let Piece-Meal pick dinner at random from everything you and your
-          household have saved.
-        </p>
-        <p>
-          {/* prefetch={false}: prefetching would pin the "random" choice
-              before the click. */}
-          <Link className="button" href="/recipes/random" prefetch={false}>
-            Just decide for us
-          </Link>
-        </p>
-      </section>
-
-      <section aria-labelledby="search-heading">
-        <h2 className="eyebrow" id="search-heading">
-          Search by ingredient
-        </h2>
-        <p>
-          Or search your saved recipes for ones that use the ingredients you
-          have on hand.
-        </p>
-
-        <SearchForm
-          key={searchedTerms.join(" ")}
-          initialTerms={searchedTerms}
-        />
-      </section>
+      <SearchForm
+        key={searchedTerms.join(" ")}
+        initialTerms={searchedTerms}
+      />
 
       {loadError ? (
         <p role="alert" className="alert alert-error">

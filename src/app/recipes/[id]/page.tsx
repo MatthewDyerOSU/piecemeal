@@ -38,6 +38,16 @@ export default async function RecipeDetailPage({
 
       <h1>{recipe.name}</h1>
 
+      {(recipe.tags ?? []).length > 0 ? (
+        <ul className="chip-list recipe-tag-list">
+          {recipe.tags.map((tag) => (
+            <li className="chip" key={tag}>
+              {tag}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
       <CookingMode />
 
       <section aria-labelledby="ingredients-heading">

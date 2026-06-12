@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { parseIngredients } from "@/lib/recipes";
+import { parseIngredients, RECIPE_TAGS } from "@/lib/recipes";
 import type { IngredientGroup } from "@/types/recipe";
 
 export type RecipeFormState = {
@@ -71,7 +71,14 @@ export async function createRecipe(
     redirect("/login");
   }
 
-  const name = String(formData.get("name") ?? "").trim();
+  // The field is named recipe-name (not "name") so browsers and password
+  // managers stop offering contact autofill for it.
+  const name = String(formData.get("recipe-name") ?? "").trim();
+
+  const tags = formData
+    .getAll("tags")
+    .map((value) => String(value))
+    .filter((value) => (RECIPE_TAGS as readonly string[]).includes(value));
 
   const ingredients = parseIngredientGroups(formData);
 
@@ -99,6 +106,7 @@ export async function createRecipe(
     name,
     ingredients,
     instructions: steps,
+    tags,
   });
 
   if (error) {

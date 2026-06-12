@@ -1,5 +1,30 @@
 import type { IngredientGroup } from "@/types/recipe";
 
+export const RECIPE_TAGS = ["healthy", "quick", "easy"] as const;
+
+/** Valid values for the saved-recipes filter: each tag and its negation. */
+export const TAG_FILTERS = [
+  ...RECIPE_TAGS,
+  ...RECIPE_TAGS.map((tag) => `not-${tag}`),
+];
+
+export function sanitizeTagFilters(values: string[]): string[] {
+  return values.filter((value) => TAG_FILTERS.includes(value));
+}
+
+/** True when the tags satisfy every filter ("easy" requires the tag,
+    "not-easy" requires its absence). */
+export function matchesTagFilters(
+  tags: string[],
+  filters: string[]
+): boolean {
+  return filters.every((filter) =>
+    filter.startsWith("not-")
+      ? !tags.includes(filter.slice(4))
+      : tags.includes(filter)
+  );
+}
+
 /** Splits a comma-separated ingredient string into trimmed, non-empty terms. */
 export function parseIngredients(input: string): string[] {
   return input
