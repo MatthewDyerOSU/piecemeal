@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { IngredientGroup } from "@/types/recipe";
+import PasteList from "./PasteList";
 
 type GroupStatus =
   | "naming" // name not locked in yet; only the name field shows
@@ -245,6 +246,15 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
             Add ingredient
           </button>
         </div>
+        <PasteList
+          noun="ingredients"
+          onAdd={(pasted) => {
+            setBaseItems((previous) => [...previous, ...pasted]);
+            setAnnouncement(
+              `Added ${pasted.length} ingredient${pasted.length === 1 ? "" : "s"} from pasted text.`
+            );
+          }}
+        />
         {baseItems.length > 0 ? (
           <ul className="item-list">
             {baseItems.map((item, index) => (
@@ -358,6 +368,15 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
                   <span className="visually-hidden"> to {group.name}</span>
                 </button>
               </div>
+              <PasteList
+                noun="ingredients"
+                onAdd={(pasted) => {
+                  update(group.key, { items: [...group.items, ...pasted] });
+                  setAnnouncement(
+                    `Added ${pasted.length} ingredient${pasted.length === 1 ? "" : "s"} from pasted text to ${group.name}.`
+                  );
+                }}
+              />
             </>
           ) : null}
 

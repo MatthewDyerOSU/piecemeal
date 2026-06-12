@@ -47,6 +47,7 @@ export default function NewRecipeForm() {
         name="steps"
         help="Add the steps one at a time, in order. They are saved as a numbered list."
         ordered
+        allowPaste
       />
 
       <button type="submit" className="button" disabled={pending}>

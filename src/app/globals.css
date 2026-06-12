@@ -545,6 +545,21 @@ legend {
   font-size: 0.8rem;
 }
 
+.paste-list {
+  margin-top: var(--space-2);
+  max-width: var(--narrow-width);
+}
+
+.paste-list label {
+  display: block;
+  font-weight: 700;
+  margin: var(--space-3) 0 var(--space-1);
+}
+
+.paste-list textarea {
+  margin-bottom: var(--space-2);
+}
+
 /* --- Alerts and status messages --- */
 
 .alert {
