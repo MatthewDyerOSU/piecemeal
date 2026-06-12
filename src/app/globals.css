@@ -646,6 +646,14 @@ legend {
   font-size: 1.1rem;
 }
 
+.household-card {
+  margin-bottom: var(--space-4);
+}
+
+.household-card form {
+  margin-top: var(--space-3);
+}
+
 .invite-code {
   font-family: var(--font-mono);
   font-size: 1.5rem;
