@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <!--
+    Piece-Meal logo: a steaming flat-bottomed bowl with a puzzle-piece-
+    shaped hole. The hole is real transparency (fill-rule="evenodd"
+    subpath), so the page background shows through the missing piece on
+    any surface. Colors follow the site theme via prefers-color-scheme.
+  -->
+  <style>
+    .mark { fill: #065f46; }
+    .steam { fill: none; stroke: #065f46; stroke-width: 4.5; stroke-linecap: round; }
+    @media (prefers-color-scheme: dark) {
+      .mark { fill: #6ee7b7; }
+      .steam { stroke: #6ee7b7; }
+    }
+  </style>
+
+  <!-- flat-bottomed bowl with puzzle-piece hole -->
+  <path class="mark" fill-rule="evenodd"
+    d="M10 40a40 40 0 0 0 20.6 35h38.8A40 40 0 0 0 90 40Z
+       M40 49h7c-4-8 10-8 6 0h7v7c8-4 8 10 0 6v7H40Z"/>
+
+  <!-- steam -->
+  <path class="steam" d="M40 31c3-4-3-7 0-12"/>
+  <path class="steam" d="M57 31c3-4-3-7 0-12"/>
+</svg>

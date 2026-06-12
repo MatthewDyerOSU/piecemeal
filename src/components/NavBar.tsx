@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import NavLinks from "./NavLinks";
+import LogoMark from "./LogoMark";
 
 export default async function NavBar() {
   const supabase = await createClient();
@@ -15,6 +16,7 @@ export default async function NavBar() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link href="/" className="wordmark">
+          <LogoMark />
           piece-meal<span className="visually-hidden"> home</span>
         </Link>
 
