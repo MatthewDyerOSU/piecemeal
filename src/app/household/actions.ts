@@ -52,9 +52,13 @@ export async function joinHousehold(
   return { error: null };
 }
 
-export async function leaveHousehold() {
+export async function leaveHousehold(formData: FormData) {
+  const householdId = String(formData.get("household_id") ?? "");
+  if (!householdId) {
+    return;
+  }
   const supabase = await requireUser();
-  await supabase.rpc("leave_household");
+  await supabase.rpc("leave_household", { hid: householdId });
   revalidatePath("/household");
   revalidatePath("/recipes");
 }
