@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createRecipe, type RecipeFormState } from "@/app/recipes/actions";
 import { RECIPE_TAGS } from "@/lib/recipes";
 import ItemListEditor from "@/components/ItemListEditor";
@@ -14,6 +14,14 @@ const TAG_LABELS: Record<string, string> = {
   easy: "Easy",
 };
 
+/**
+ * Error flow, designed with screen-reader users in mind: on a failed
+ * submission focus moves straight into the first erroring field (whose
+ * label and error are read immediately via aria-describedby), each
+ * remaining invalid field announces its own error when tabbed into, and
+ * a short list just before the submit button links back to any fields
+ * still in error — entries disappear as fields are fixed.
+ */
 export default function NewRecipeForm() {
   const [state, formAction, pending] = useActionState(
     createRecipe,
@@ -21,27 +29,31 @@ export default function NewRecipeForm() {
   );
   const { errors } = state;
 
-  // All errors are announced together in the summary live region at the
-  // top of the form; each entry knows which field to send focus to.
-  const errorEntries = [
-    errors.name ? { id: "recipe-name", message: errors.name } : null,
-    errors.ingredients
+  // Live "is it fixed yet" tracking, so the bottom list only shows what
+  // is still broken.
+  const [nameValue, setNameValue] = useState("");
+  const [hasIngredients, setHasIngredients] = useState(false);
+
+  const nameInvalid = Boolean(errors.name) && nameValue.trim() === "";
+  const ingredientsInvalid = Boolean(errors.ingredients) && !hasIngredients;
+
+  const remaining = [
+    nameInvalid && errors.name
+      ? { id: "recipe-name", message: errors.name }
+      : null,
+    ingredientsInvalid && errors.ingredients
       ? { id: "recipe-ingredients", message: errors.ingredients }
       : null,
-    errors.form ? { id: null, message: errors.form } : null,
   ].filter((entry) => entry !== null);
 
-  // On a failed submission the summary (role="alert") announces all the
-  // errors, focus moves to the first erroring input, and each invalid
-  // field's own error is read on focus via aria-describedby. The summary
-  // entries are also links straight to their fields.
-  const summaryRef = useRef<HTMLDivElement>(null);
+  const formErrorRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const firstField = errorEntries.find((entry) => entry.id);
-    if (firstField?.id) {
-      document.getElementById(firstField.id)?.focus();
+    if (errors.name) {
+      document.getElementById("recipe-name")?.focus();
+    } else if (errors.ingredients) {
+      document.getElementById("recipe-ingredients")?.focus();
     } else if (errors.form) {
-      summaryRef.current?.focus();
+      formErrorRef.current?.focus();
     }
     // Refocus on every failed submission, not only when messages change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,33 +65,16 @@ export default function NewRecipeForm() {
         Required fields are marked with an asterisk (*).
       </p>
 
-      <div ref={summaryRef} tabIndex={-1} role="alert" className="error-summary">
-        {errorEntries.length > 0 ? (
-          <div className="alert alert-error">
-            <h2>There is a problem</h2>
-            <p>The recipe was not saved. Fix the following and try again:</p>
-            <ul>
-              {errorEntries.map((entry) => (
-                <li key={entry.message}>
-                  {entry.id ? (
-                    <a
-                      href={`#${entry.id}`}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        document.getElementById(entry.id)?.focus();
-                      }}
-                    >
-                      {entry.message}
-                    </a>
-                  ) : (
-                    entry.message
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
+      {errors.form ? (
+        <div
+          ref={formErrorRef}
+          tabIndex={-1}
+          role="alert"
+          className="alert alert-error error-summary"
+        >
+          <p>{errors.form}</p>
+        </div>
+      ) : null}
 
       <div className="field">
         <label htmlFor="recipe-name">
@@ -92,10 +87,12 @@ export default function NewRecipeForm() {
           required
           aria-required="true"
           autoComplete="off"
-          aria-invalid={errors.name ? true : undefined}
-          aria-describedby={errors.name ? "recipe-name-error" : undefined}
+          value={nameValue}
+          onChange={(event) => setNameValue(event.target.value)}
+          aria-invalid={nameInvalid ? true : undefined}
+          aria-describedby={nameInvalid ? "recipe-name-error" : undefined}
         />
-        {errors.name ? (
+        {nameInvalid ? (
           <p id="recipe-name-error" className="field-error">
             {errors.name}
           </p>
@@ -103,8 +100,9 @@ export default function NewRecipeForm() {
       </div>
 
       <IngredientGroupsEditor
-        error={errors.ingredients}
+        error={ingredientsInvalid ? errors.ingredients : undefined}
         inputId="recipe-ingredients"
+        onHasIngredientsChange={setHasIngredients}
       />
 
       <ItemListEditor
@@ -131,6 +129,30 @@ export default function NewRecipeForm() {
           ))}
         </div>
       </fieldset>
+
+      {remaining.length > 0 ? (
+        <section
+          aria-labelledby="remaining-errors-heading"
+          className="alert alert-error error-summary"
+        >
+          <h2 id="remaining-errors-heading">Still needing attention</h2>
+          <ul>
+            {remaining.map((entry) => (
+              <li key={entry.id}>
+                <a
+                  href={`#${entry.id}`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    document.getElementById(entry.id)?.focus();
+                  }}
+                >
+                  {entry.message}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <button type="submit" className="button" disabled={pending}>
         {pending ? "Saving…" : "Save recipe"}

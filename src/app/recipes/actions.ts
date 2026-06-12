@@ -148,7 +148,7 @@ export type RandomPickState =
   | { status: "picked"; id: string; name: string };
 
 export async function pickRandomRecipe(
-  _previous: RandomPickState,
+  previous: RandomPickState,
   formData: FormData
 ): Promise<RandomPickState> {
   const supabase = await createClient();
@@ -173,6 +173,14 @@ export async function pickRandomRecipe(
     return { status: "none" };
   }
 
-  const choice = candidates[Math.floor(Math.random() * candidates.length)];
+  // Never serve the same recipe twice in a row (unless it is the only
+  // candidate). This also guarantees the live region's text changes, so
+  // screen readers always announce a repeat press.
+  const pool =
+    previous.status === "picked" && candidates.length > 1
+      ? candidates.filter((candidate) => candidate.id !== previous.id)
+      : candidates;
+
+  const choice = pool[Math.floor(Math.random() * pool.length)];
   return { status: "picked", id: choice.id, name: choice.name };
 }

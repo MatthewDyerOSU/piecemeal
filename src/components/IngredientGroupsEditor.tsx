@@ -35,11 +35,16 @@ type GroupState = {
 export default function IngredientGroupsEditor({
   error,
   inputId,
+  onHasIngredientsChange,
 }: {
   error?: string;
   /** Stable id for the base ingredient input so the form's error summary
       can move focus to it. */
   inputId?: string;
+  /** Reports whether the editor currently holds at least one ingredient
+      (committed or drafted), so the form can clear the requirement error
+      live once it is satisfied. */
+  onHasIngredientsChange?: (hasIngredients: boolean) => void;
 }) {
   const id = useId();
   const nextKey = useRef(1);
@@ -91,6 +96,13 @@ export default function IngredientGroupsEditor({
       ],
     })),
   ].filter((group) => group.items.length > 0);
+
+  const hasIngredients = serialized.length > 0;
+  useEffect(() => {
+    onHasIngredientsChange?.(hasIngredients);
+    // The callback is a state setter with stable identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasIngredients]);
 
   function update(key: number, patch: Partial<GroupState>) {
     setGroups((previous) =>
