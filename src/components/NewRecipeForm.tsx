@@ -31,11 +31,16 @@ export default function NewRecipeForm() {
     errors.form ? { id: null, message: errors.form } : null,
   ].filter((entry) => entry !== null);
 
-  // On a failed submission, focus the error summary itself; each listed
-  // error is a same-page link that moves focus to its field.
+  // On a failed submission the summary (role="alert") announces all the
+  // errors, focus moves to the first erroring input, and each invalid
+  // field's own error is read on focus via aria-describedby. The summary
+  // entries are also links straight to their fields.
   const summaryRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (Object.keys(state.errors).length > 0) {
+    const firstField = errorEntries.find((entry) => entry.id);
+    if (firstField?.id) {
+      document.getElementById(firstField.id)?.focus();
+    } else if (errors.form) {
       summaryRef.current?.focus();
     }
     // Refocus on every failed submission, not only when messages change.
@@ -88,7 +93,13 @@ export default function NewRecipeForm() {
           aria-required="true"
           autoComplete="off"
           aria-invalid={errors.name ? true : undefined}
+          aria-describedby={errors.name ? "recipe-name-error" : undefined}
         />
+        {errors.name ? (
+          <p id="recipe-name-error" className="field-error">
+            {errors.name}
+          </p>
+        ) : null}
       </div>
 
       <IngredientGroupsEditor

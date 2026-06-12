@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { parseIngredients, RECIPE_TAGS } from "@/lib/recipes";
+import {
+  matchesTagFilters,
+  parseIngredients,
+  RECIPE_TAGS,
+  sanitizeTagFilters,
+} from "@/lib/recipes";
 import type { IngredientGroup } from "@/types/recipe";
 
 export type RecipeFormState = {
@@ -135,4 +140,39 @@ export async function deleteRecipe(formData: FormData) {
   }
 
   revalidatePath("/recipes");
+}
+
+export type RandomPickState =
+  | { status: "idle" }
+  | { status: "none" }
+  | { status: "picked"; id: string; name: string };
+
+export async function pickRandomRecipe(
+  _previous: RandomPickState,
+  formData: FormData
+): Promise<RandomPickState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const filters = sanitizeTagFilters(
+    formData.getAll("filter").map((value) => String(value))
+  );
+
+  const { data } = await supabase.from("recipes").select("id, name, tags");
+  const candidates = (
+    (data as { id: string; name: string; tags: string[] }[]) ?? []
+  ).filter((recipe) => matchesTagFilters(recipe.tags ?? [], filters));
+
+  if (candidates.length === 0) {
+    return { status: "none" };
+  }
+
+  const choice = candidates[Math.floor(Math.random() * candidates.length)];
+  return { status: "picked", id: choice.id, name: choice.name };
 }

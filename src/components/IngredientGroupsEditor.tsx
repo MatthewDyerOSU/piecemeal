@@ -214,6 +214,11 @@ export default function IngredientGroupsEditor({
         <label htmlFor={baseInputId}>
           {groups.length > 0 ? "Ungrouped ingredients" : "Add an ingredient"}
         </label>
+        {error ? (
+          <p id={`${baseInputId}-error`} className="field-error">
+            {error}
+          </p>
+        ) : null}
         <div className="item-entry">
           <input
             ref={register("base-item")}
@@ -229,7 +234,9 @@ export default function IngredientGroupsEditor({
                 addBaseItem();
               }
             }}
-            aria-describedby={`${id}-help`}
+            aria-describedby={
+              error ? `${id}-help ${baseInputId}-error` : `${id}-help`
+            }
             aria-invalid={error ? true : undefined}
             autoComplete="off"
           />
