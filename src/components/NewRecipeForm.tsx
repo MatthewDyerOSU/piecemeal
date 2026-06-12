@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createRecipe, type RecipeFormState } from "@/app/recipes/actions";
 import ItemListEditor from "@/components/ItemListEditor";
+import IngredientGroupsEditor from "@/components/IngredientGroupsEditor";
 
 const initialState: RecipeFormState = { errors: {} };
 
@@ -38,13 +39,7 @@ export default function NewRecipeForm() {
         ) : null}
       </div>
 
-      <ItemListEditor
-        label="Ingredients"
-        noun="ingredient"
-        name="ingredients"
-        help="Add ingredients one at a time. For example: 2 cups flour."
-        error={errors.ingredients}
-      />
+      <IngredientGroupsEditor error={errors.ingredients} />
 
       <ItemListEditor
         label="Instructions"
