@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PieceMeal
 
-## Getting Started
+Decide what to cook with what you already have. Save recipes, search them by
+the ingredients in your kitchen, and use cooking mode to keep your screen
+awake while you cook.
 
-First, run the development server:
+Built with Next.js (App Router) and [Supabase](https://supabase.com)
+(Postgres + Google sign-in), with a hand-rolled design system targeting
+**WCAG 2.2 Level AAA**.
+
+## Features
+
+- **Find recipes** — enter comma-separated ingredients and see which of your
+  saved recipes use all of them.
+- **Saved recipes** — browse, open, and delete your recipes (deletes ask for
+  confirmation first).
+- **Add a recipe** — name, ingredients, and step-by-step instructions, with
+  accessible inline validation.
+- **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
+  Wake Lock API (needs HTTPS; gracefully explains itself on unsupported
+  browsers).
+- **Accessibility** — 7:1 contrast in light and dark themes, 44px minimum
+  targets, skip link, visible focus, reduced-motion support, no time limits.
+  Theming lives entirely in the custom properties at the top of
+  `src/app/globals.css`, so re-skinning the site is a one-file change.
+
+## Setup
+
+### 1. Supabase project
+
+You can reuse an existing Supabase project or create one at
+[database.new](https://database.new).
+
+1. Run the SQL in `supabase/migrations/20260612000000_create_recipes.sql`
+   (Supabase dashboard → SQL Editor). It creates the `recipes` table with
+   row-level security so each user can only see their own recipes.
+2. Enable the Google provider: dashboard → Authentication → Providers →
+   Google. Follow the linked instructions to create an OAuth client in the
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+   - Application type: **Web application**
+   - Authorized redirect URI:
+     `https://<your-project-ref>.supabase.co/auth/v1/callback`
+   - Copy the client ID and secret into the Supabase Google provider form.
+3. Set the redirect allow-list: dashboard → Authentication → URL
+   Configuration. Add `http://localhost:3000/**` for development (and your
+   production URL once deployed, see below).
+
+### 2. Environment variables
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from
+the Supabase dashboard → Settings → API.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open <http://localhost:3000>.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploying with a custom domain
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Deploy to [Vercel](https://vercel.com/new) (import the GitHub repo, add
+   the two environment variables, deploy).
+2. Buy a domain from any registrar (Namecheap, Cloudflare, Porkbun, …).
+3. In Vercel → Project → Settings → Domains, add the domain. Vercel shows
+   the DNS records to create at your registrar: an `A` record for the apex
+   (`76.76.21.21`) and/or a `CNAME` for `www` pointing to
+   `cname.vercel-dns.com`.
+4. Update auth for the new domain:
+   - Supabase → Authentication → URL Configuration: set the Site URL to
+     `https://yourdomain.com` and add `https://yourdomain.com/**` to the
+     redirect allow-list.
+   - No Google Cloud change is needed as long as sign-in continues to
+     redirect through `https://<project-ref>.supabase.co/auth/v1/callback`.
+     (Optionally configure a [custom auth domain](https://supabase.com/docs/guides/platform/custom-domains)
+     so the Google consent screen shows your domain instead of supabase.co.)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── middleware.ts              Refreshes the Supabase session cookie
+├── app/
+│   ├── layout.tsx             Skip link, header/nav, footer
+│   ├── page.tsx               Ingredient search (GET form, works without JS)
+│   ├── login/                 Sign-in page; shows auth errors out loud
+│   ├── auth/
+│   │   ├── signin/route.ts    Starts the Google OAuth flow
+│   │   ├── callback/route.ts  Exchanges the OAuth code for a session
+│   │   └── signout/route.ts   Signs out
+│   ├── recipes/
+│   │   ├── page.tsx           Saved recipes
+│   │   ├── new/page.tsx       Add a recipe
+│   │   ├── [id]/page.tsx      Recipe detail + cooking mode
+│   │   └── actions.ts         Server actions (create/delete)
+│   └── accessibility/         Accessibility statement
+├── components/                NavBar, forms, CookingMode (wake lock)
+├── lib/
+│   ├── recipes.ts             Ingredient parsing/matching
+│   └── supabase/              Server + middleware Supabase clients
+└── types/recipe.ts
+supabase/migrations/           Database schema (run in Supabase SQL editor)
+```
