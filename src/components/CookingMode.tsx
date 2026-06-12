@@ -77,7 +77,9 @@ export default function CookingMode() {
 
   return (
     <section className="card cooking-mode" aria-labelledby="cooking-mode-heading">
-      <h2 id="cooking-mode-heading">Cooking mode</h2>
+      <h2 className="eyebrow" id="cooking-mode-heading">
+        Cooking mode
+      </h2>
 
       {supported ? (
         <>
