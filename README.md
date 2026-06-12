@@ -21,6 +21,10 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   bullets and numbering automatically.
   Ingredients can be split into named groups (e.g. "Salmon" / "Avocado
   salsa") that render as their own subheaded lists on the recipe page.
+- **Household sharing** — two (or more) accounts can share one recipe
+  collection: create a household, share its invite code, and everyone in
+  it sees, searches, and can edit each other's recipes with separate
+  sign-ins.
 - **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
   Wake Lock API (needs HTTPS; gracefully explains itself on unsupported
   browsers).
