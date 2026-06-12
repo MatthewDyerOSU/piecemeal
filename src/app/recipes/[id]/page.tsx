@@ -30,11 +30,6 @@ export default async function RecipeDetailPage({
     notFound();
   }
 
-  const instructionSteps = recipe.instructions
-    .split("\n")
-    .map((step) => step.trim())
-    .filter((step) => step.length > 0);
-
   return (
     <article className="page-narrow">
       <p>
@@ -60,10 +55,14 @@ export default async function RecipeDetailPage({
         <h2 className="eyebrow" id="instructions-heading">
           Instructions
         </h2>
-        {instructionSteps.length === 0 ? (
+        {recipe.instructions.length === 0 ? (
           <p>No instructions were added for this recipe.</p>
         ) : (
-          instructionSteps.map((step, index) => <p key={index}>{step}</p>)
+          <ol>
+            {recipe.instructions.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ol>
         )}
       </section>
     </article>

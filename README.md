@@ -10,12 +10,13 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
 
 ## Features
 
-- **Find recipes** — enter comma-separated ingredients and see which of your
-  saved recipes use all of them.
+- **Find recipes** — add the ingredients you have one at a time and see
+  which of your saved recipes use all of them (results have shareable URLs).
 - **Saved recipes** — browse, open, and delete your recipes (deletes ask for
   confirmation first).
-- **Add a recipe** — name, ingredients, and step-by-step instructions, with
-  accessible inline validation.
+- **Add a recipe** — name, then ingredients and instruction steps entered
+  one at a time into removable lists (bulleted ingredients, numbered steps),
+  with accessible inline validation and screen-reader announcements.
 - **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
   Wake Lock API (needs HTTPS; gracefully explains itself on unsupported
   browsers).
@@ -31,8 +32,8 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
 You can reuse an existing Supabase project or create one at
 [database.new](https://database.new).
 
-1. Run the SQL in `supabase/migrations/20260612000000_create_recipes.sql`
-   (Supabase dashboard → SQL Editor). It creates the `recipes` table with
+1. Run the SQL files in `supabase/migrations/` in filename order
+   (Supabase dashboard → SQL Editor). They create the `recipes` table with
    row-level security so each user can only see their own recipes.
 2. Enable the Google provider: dashboard → Authentication → Providers →
    Google. Follow the linked instructions to create an OAuth client in the

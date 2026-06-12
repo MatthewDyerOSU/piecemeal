@@ -3,6 +3,6 @@ export type Recipe = {
   user_id: string;
   name: string;
   ingredients: string[];
-  instructions: string;
+  instructions: string[];
   created_at: string;
 };

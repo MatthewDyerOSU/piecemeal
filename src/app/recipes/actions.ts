@@ -13,6 +13,13 @@ export type RecipeFormState = {
   };
 };
 
+function listValues(formData: FormData, name: string): string[] {
+  return formData
+    .getAll(name)
+    .map((value) => String(value).trim())
+    .filter((value) => value.length > 0);
+}
+
 export async function createRecipe(
   _previousState: RecipeFormState,
   formData: FormData
@@ -27,16 +34,26 @@ export async function createRecipe(
   }
 
   const name = String(formData.get("name") ?? "").trim();
-  const ingredients = parseIngredients(String(formData.get("ingredients") ?? ""));
-  const instructions = String(formData.get("instructions") ?? "").trim();
+
+  // Committed list items, plus whatever is still typed in the entry boxes.
+  // The ingredient draft is comma-split so the form stays usable without
+  // JavaScript (where the add buttons do nothing).
+  const ingredients = [
+    ...listValues(formData, "ingredients"),
+    ...parseIngredients(String(formData.get("ingredients-draft") ?? "")),
+  ];
+  const steps = listValues(formData, "steps");
+  const stepDraft = String(formData.get("steps-draft") ?? "").trim();
+  if (stepDraft) {
+    steps.push(stepDraft);
+  }
 
   const errors: RecipeFormState["errors"] = {};
   if (!name) {
     errors.name = "Enter a name for the recipe.";
   }
   if (ingredients.length === 0) {
-    errors.ingredients =
-      "Enter at least one ingredient, separated by commas.";
+    errors.ingredients = "Add at least one ingredient.";
   }
   if (Object.keys(errors).length > 0) {
     return { errors };
@@ -46,7 +63,7 @@ export async function createRecipe(
     user_id: user.id,
     name,
     ingredients,
-    instructions,
+    instructions: steps,
   });
 
   if (error) {
