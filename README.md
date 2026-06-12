@@ -1,4 +1,4 @@
-# PieceMeal
+# Piece-Meal
 
 Decide what to cook with what you already have. Save recipes, search them by
 the ingredients in your kitchen, and use cooking mode to keep your screen

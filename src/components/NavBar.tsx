@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import NavLinks from "./NavLinks";
-import ThemeToggle from "./ThemeToggle";
 
 export default async function NavBar() {
   const supabase = await createClient();
@@ -16,7 +15,7 @@ export default async function NavBar() {
     <header className="site-header">
       <div className="site-header-inner">
         <Link href="/" className="wordmark">
-          piecemeal<span className="visually-hidden"> home</span>
+          piece-meal<span className="visually-hidden"> home</span>
         </Link>
 
         <nav aria-label="Main">
@@ -24,7 +23,6 @@ export default async function NavBar() {
         </nav>
 
         <div className="auth-area">
-          <ThemeToggle />
           {user ? (
             <>
               <span className="user-name">Signed in as {displayName}</span>

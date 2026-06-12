@@ -1,5 +1,5 @@
 /*
- * PieceMeal design system — editorial structure adapted from
+ * Piece-Meal design system — editorial structure adapted from
  * matthew-dyer.com (hairline sections, mono eyebrow labels, narrow
  * column) with its own identity: Atkinson Hyperlegible type and an
  * emerald accent.
@@ -44,16 +44,8 @@
   --target-min: 44px; /* WCAG 2.5.5 (AAA) minimum pointer target */
 }
 
-/*
- * Theme switching: with no data-theme attribute (or "system"), the
- * prefers-color-scheme media query decides. An explicit data-theme="light"
- * or "dark" set by the ThemeToggle overrides it. The dark token block is
- * therefore duplicated below — CSS cannot share rules across a media
- * query boundary.
- */
-
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     --color-bg: #0f0f0e;
     --color-surface: #1a1a18;
     --color-text: #ededed;          /* 16.4:1 on --color-bg */
@@ -67,29 +59,6 @@
     --color-success: #9be3b0;
     --color-focus: #6ee7b7;
   }
-}
-
-:root[data-theme="dark"] {
-  --color-bg: #0f0f0e;
-  --color-surface: #1a1a18;
-  --color-text: #ededed;
-  --color-text-muted: #a8b1bd;
-  --color-accent: #6ee7b7;
-  --color-on-accent: #0f0f0e;
-  --color-link: #6ee7b7;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-border-strong: #8a8a8a;
-  --color-error: #ffb4ab;
-  --color-success: #9be3b0;
-  --color-focus: #6ee7b7;
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
 }
 
 *,
@@ -242,7 +211,22 @@ ol {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-2) var(--space-3);
+}
+
+/* Below the full content width, the nav drops to its own full-width row
+   under the wordmark and account controls, keeping both rows cleanly
+   aligned instead of wrapping arbitrarily. */
+@media (max-width: 55.99rem) {
+  .site-header-inner nav {
+    order: 3;
+    width: 100%;
+  }
+
+  .nav-list a {
+    padding-left: 0;
+    padding-right: var(--space-2);
+  }
 }
 
 .wordmark {
@@ -299,35 +283,6 @@ ol {
 .auth-area .user-name {
   color: var(--color-text-muted);
   font-size: 0.85rem;
-}
-
-/* --- Theme toggle --- */
-
-.theme-toggle {
-  display: flex;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.theme-toggle button {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  min-height: var(--target-min);
-  padding: 0 var(--space-2);
-  border: 0;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.theme-toggle button + button {
-  border-left: 1px solid var(--color-border-strong);
-}
-
-.theme-toggle button[aria-pressed="true"] {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
 }
 
 /* --- Layout --- */
