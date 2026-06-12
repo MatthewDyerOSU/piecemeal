@@ -236,7 +236,20 @@ ol {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-height: var(--target-min);
+}
+
+.logo-mark {
+  fill: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.logo-mark .logo-steam {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 4.5;
+  stroke-linecap: round;
 }
 
 .wordmark:hover {
