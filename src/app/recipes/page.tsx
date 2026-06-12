@@ -27,7 +27,7 @@ function toArray(value: string | string[] | undefined): string[] {
 export default async function RecipesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string | string[]; picked?: string }>;
+  searchParams: Promise<{ filter?: string | string[] }>;
 }) {
   const params = await searchParams;
   const filters = sanitizeTagFilters(toArray(params.filter));
@@ -50,25 +50,13 @@ export default async function RecipesPage({
     matchesTagFilters(recipe.tags ?? [], filters)
   );
 
-  const filterQuery =
-    filters.length > 0
-      ? `?${filters.map((f) => `filter=${f}`).join("&")}`
-      : "";
-
   return (
     <>
       <h1>Saved recipes</h1>
 
-      {params.picked === "none" ? (
-        <p role="status" className="alert">
-          There were no recipes to pick from. Adjust the filters, or{" "}
-          <Link href="/recipes/new">add a recipe</Link>.
-        </p>
-      ) : null}
-
       <section aria-labelledby="filter-heading" className="filter-section">
         <h2 className="eyebrow" id="filter-heading">
-          Filter and pick
+          Filter
         </h2>
         <form method="get" action="/recipes" className="filter-form">
           <fieldset>
@@ -96,19 +84,6 @@ export default async function RecipesPage({
             ) : null}
           </div>
         </form>
-        <p>
-          Can&apos;t decide? Let Piece-Meal pick at random from the recipes
-          below.
-        </p>
-        <p>
-          <Link
-            className="button"
-            href={`/recipes/random${filterQuery}`}
-            prefetch={false}
-          >
-            Just decide for us
-          </Link>
-        </p>
       </section>
 
       {error ? (

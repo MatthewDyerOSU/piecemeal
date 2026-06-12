@@ -207,30 +207,26 @@ ol {
 .site-header-inner {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: var(--space-2) var(--space-4) var(--space-1);
-}
-
-/* Deliberate two-row header at every width: brand left and account
-   controls right on the first row, navigation on its own row below. */
-.header-top {
+  padding: var(--space-2) var(--space-4);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-2) var(--space-3);
-  flex-wrap: wrap;
 }
 
-.nav-list a:first-child,
-.site-header-inner nav .nav-list li:first-child a {
-  padding-left: 0;
-}
-
-/* On very small screens, stack the top row left-aligned so nothing sits
-   offset to the right. */
-@media (max-width: 30rem) {
-  .header-top {
+/* Below the single-row breakpoint the header stacks, everything
+   left-aligned — never two rows with opposite alignment. */
+@media (max-width: 59.99rem) {
+  .site-header-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .auth-area {
+    margin-left: 0;
+  }
+
+  .nav-list li:first-child a {
+    padding-left: 0;
   }
 }
 
@@ -618,6 +614,21 @@ legend {
 
 .alert-error {
   color: var(--color-error);
+}
+
+.alert a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.error-summary:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.error-summary h2 {
+  font-size: 1rem;
+  margin-bottom: var(--space-2);
 }
 
 .alert-success {

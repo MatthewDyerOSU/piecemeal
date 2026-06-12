@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { allIngredients, parseIngredients, recipeMatches } from "@/lib/recipes";
+import {
+  allIngredients,
+  parseIngredients,
+  recipeMatches,
+  sanitizeTagFilters,
+} from "@/lib/recipes";
 import type { Recipe } from "@/types/recipe";
 import SearchForm from "@/components/SearchForm";
 
@@ -14,6 +19,8 @@ export default async function HomePage({
   searchParams: Promise<{
     ingredients?: string | string[];
     "ingredients-draft"?: string | string[];
+    filter?: string | string[];
+    picked?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -78,18 +85,75 @@ export default async function HomePage({
     }
   }
 
+  const pickerFilters = sanitizeTagFilters(toArray(params.filter));
+
   return (
     <>
       <h1>Find recipes</h1>
-      <p>
-        Search your saved recipes for ones that use the ingredients you have
-        on hand.
-      </p>
 
-      <SearchForm
-        key={searchedTerms.join(" ")}
-        initialTerms={searchedTerms}
-      />
+      {params.picked === "none" ? (
+        <p role="status" className="alert">
+          There were no recipes to pick from. Try different tags, or{" "}
+          <Link href="/recipes/new">add a recipe</Link>.
+        </p>
+      ) : null}
+
+      <section aria-labelledby="decide-heading" className="decide">
+        <h2 className="eyebrow" id="decide-heading">
+          Can&apos;t decide?
+        </h2>
+        <p>
+          Let Piece-Meal pick dinner at random from everything you and your
+          household have saved.
+        </p>
+        <form method="get" action="/recipes/random">
+          <fieldset>
+            <legend className="visually-hidden">
+              Only pick from recipes tagged
+            </legend>
+            <div className="checkbox-list">
+              {[
+                { value: "healthy", label: "Healthy" },
+                { value: "quick", label: "Quick" },
+                { value: "easy", label: "Easy" },
+                { value: "not-healthy", label: "Not healthy" },
+                { value: "not-quick", label: "Not quick" },
+                { value: "not-easy", label: "Not easy" },
+              ].map((option) => (
+                <label key={option.value} className="checkbox-option">
+                  <input
+                    type="checkbox"
+                    name="filter"
+                    value={option.value}
+                    defaultChecked={pickerFilters.includes(option.value)}
+                  />
+                  {option.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p>
+            <button type="submit" className="button">
+              Just decide for us
+            </button>
+          </p>
+        </form>
+      </section>
+
+      <section aria-labelledby="search-heading">
+        <h2 className="eyebrow" id="search-heading">
+          Search by ingredient
+        </h2>
+        <p>
+          Search your saved recipes for ones that use the ingredients you
+          have on hand.
+        </p>
+
+        <SearchForm
+          key={searchedTerms.join(" ")}
+          initialTerms={searchedTerms}
+        />
+      </section>
 
       {loadError ? (
         <p role="alert" className="alert alert-error">

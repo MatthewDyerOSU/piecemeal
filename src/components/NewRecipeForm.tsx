@@ -31,11 +31,12 @@ export default function NewRecipeForm() {
     errors.form ? { id: null, message: errors.form } : null,
   ].filter((entry) => entry !== null);
 
+  // On a failed submission, focus the error summary itself; each listed
+  // error is a same-page link that moves focus to its field.
   const summaryRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const firstField = errorEntries.find((entry) => entry.id);
-    if (firstField?.id) {
-      document.getElementById(firstField.id)?.focus();
+    if (Object.keys(state.errors).length > 0) {
+      summaryRef.current?.focus();
     }
     // Refocus on every failed submission, not only when messages change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,17 +48,28 @@ export default function NewRecipeForm() {
         Required fields are marked with an asterisk (*).
       </p>
 
-      <div ref={summaryRef} aria-live="assertive" role="alert">
+      <div ref={summaryRef} tabIndex={-1} role="alert" className="error-summary">
         {errorEntries.length > 0 ? (
           <div className="alert alert-error">
-            <p>
-              The recipe was not saved because of{" "}
-              {errorEntries.length === 1 ? "a problem" : "problems"} with the
-              form:
-            </p>
+            <h2>There is a problem</h2>
+            <p>The recipe was not saved. Fix the following and try again:</p>
             <ul>
               {errorEntries.map((entry) => (
-                <li key={entry.message}>{entry.message}</li>
+                <li key={entry.message}>
+                  {entry.id ? (
+                    <a
+                      href={`#${entry.id}`}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        document.getElementById(entry.id)?.focus();
+                      }}
+                    >
+                      {entry.message}
+                    </a>
+                  ) : (
+                    entry.message
+                  )}
+                </li>
               ))}
             </ul>
           </div>

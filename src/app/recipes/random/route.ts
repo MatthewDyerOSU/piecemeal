@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
   if (candidates.length === 0) {
     const query = filters.map((f) => `&filter=${f}`).join("");
-    return NextResponse.redirect(`${origin}/recipes?picked=none${query}`);
+    return NextResponse.redirect(`${origin}/?picked=none${query}`);
   }
 
   const choice = candidates[Math.floor(Math.random() * candidates.length)];

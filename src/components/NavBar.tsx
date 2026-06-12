@@ -15,16 +15,22 @@ export default async function NavBar() {
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <div className="header-top">
-          <Link href="/" className="wordmark">
-            <LogoMark />
-            piece-meal<span className="visually-hidden"> home</span>
-          </Link>
+        <Link href="/" className="wordmark">
+          <LogoMark />
+          piece-meal<span className="visually-hidden"> home</span>
+        </Link>
 
-          <div className="auth-area">
+        <nav aria-label="Main">
+          <NavLinks />
+        </nav>
+
+        <div className="auth-area">
           {user ? (
             <>
-              <span className="user-name">Signed in as {displayName}</span>
+              <span className="user-name">
+                <span className="visually-hidden">Signed in as </span>
+                {displayName}
+              </span>
               <form action="/auth/signout" method="post">
                 <button type="submit" className="button button-secondary">
                   Sign out
@@ -36,12 +42,7 @@ export default async function NavBar() {
               Sign in
             </Link>
           )}
-          </div>
         </div>
-
-        <nav aria-label="Main">
-          <NavLinks />
-        </nav>
       </div>
     </header>
   );
