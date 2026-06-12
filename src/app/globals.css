@@ -1,0 +1,421 @@
+/*
+ * PieceMeal design system.
+ *
+ * All theming lives in the custom properties below so the site can be
+ * re-skinned (e.g. to match accessabilityofficer.com) by editing this
+ * block only. Both palettes meet WCAG 2.2 AAA contrast: body text >= 7:1,
+ * large text >= 4.5:1, UI component boundaries >= 3:1.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  --color-bg: #ffffff;
+  --color-surface: #f4f6f8;
+  --color-text: #16191d;          /* 16.4:1 on --color-bg */
+  --color-text-muted: #374151;    /* 10.3:1 on --color-bg */
+  --color-accent: #1e3a8a;        /* 10.3:1 on --color-bg */
+  --color-on-accent: #ffffff;     /* 10.3:1 on --color-accent */
+  --color-link: #1e3a8a;
+  --color-border: #5f6975;        /* 5.0:1 on --color-bg (UI boundary) */
+  --color-error: #991b1b;         /* 8.0:1 on --color-bg */
+  --color-success: #14532d;       /* 9.9:1 on --color-bg */
+  --color-focus: #1e3a8a;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+
+  --radius: 0.5rem;
+  --content-width: 65rem;
+  --narrow-width: 40rem;
+  --measure: 70ch; /* WCAG 1.4.8: keep text lines at a readable length */
+  --target-min: 44px; /* WCAG 2.5.5 (AAA) minimum pointer target */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #101418;
+    --color-surface: #1a2027;
+    --color-text: #f2f5f7;        /* 15.6:1 on --color-bg */
+    --color-text-muted: #c3ccd6;  /* 10.1:1 on --color-bg */
+    --color-accent: #9ecbff;      /* 10.5:1 on --color-bg */
+    --color-on-accent: #101418;   /* 10.5:1 on --color-accent */
+    --color-link: #9ecbff;
+    --color-border: #8a94a0;
+    --color-error: #ffb4ab;
+    --color-success: #9be3b0;
+    --color-focus: #9ecbff;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- Focus visibility (WCAG 2.4.13 Focus Appearance) --- */
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* --- Typography --- */
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin: 0 0 var(--space-3);
+  max-width: var(--measure);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+p,
+li,
+dd {
+  max-width: var(--measure);
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 0.15em;
+}
+
+ul,
+ol {
+  padding-left: 1.5rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Skip link (WCAG 2.4.1) --- */
+
+.skip-link {
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-2);
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-radius: var(--radius);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* --- Header and navigation --- */
+
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.site-header-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.wordmark {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+}
+
+.wordmark:hover {
+  text-decoration: underline;
+}
+
+.nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding: 0 var(--space-2);
+  font-weight: 600;
+}
+
+.nav-list a[aria-current="page"] {
+  text-decoration-thickness: 0.18em;
+}
+
+.auth-area {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.auth-area .user-name {
+  color: var(--color-text-muted);
+}
+
+/* --- Layout --- */
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3) var(--space-5);
+}
+
+main:focus {
+  outline: none;
+}
+
+.page-narrow {
+  max-width: var(--narrow-width);
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.site-footer-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+/* --- Buttons --- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  text-decoration: underline;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  background: transparent;
+  color: var(--color-link);
+  border-color: currentColor;
+}
+
+.button-danger {
+  background: transparent;
+  color: var(--color-error);
+  border-color: currentColor;
+}
+
+/* --- Forms --- */
+
+.field {
+  margin-bottom: var(--space-4);
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.field-help {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  width: 100%;
+  max-width: var(--narrow-width);
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--target-min);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+textarea {
+  line-height: 1.6;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.field-error {
+  margin: var(--space-1) 0 0;
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* --- Alerts and status messages --- */
+
+.alert {
+  max-width: var(--measure);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  border: 2px solid currentColor;
+  border-radius: var(--radius);
+}
+
+.alert-error {
+  color: var(--color-error);
+}
+
+.alert-success {
+  color: var(--color-success);
+}
+
+/* --- Cards and recipe lists --- */
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recipe-grid > li {
+  max-width: none;
+}
+
+.recipe-card h2 {
+  font-size: 1.25rem;
+}
+
+.recipe-card-actions {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.recipe-meta {
+  color: var(--color-text-muted);
+  margin-top: 0;
+}
+
+/* --- Cooking mode --- */
+
+.cooking-mode {
+  margin: var(--space-4) 0;
+}
+
+.cooking-mode-status {
+  font-weight: 600;
+  min-height: 1.6em;
+}
+
+/* --- Motion (WCAG 2.3.3) --- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

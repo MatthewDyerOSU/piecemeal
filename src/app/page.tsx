@@ -1,99 +1,120 @@
-'use client';
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { parseIngredients, recipeMatches } from "@/lib/recipes";
+import type { Recipe } from "@/types/recipe";
 
-import { useUpdateIngredientsContext, useUserContext, useUserSettingsContext } from "@/context/userContext";
-import colors from '@/styles/colors';
-import { Recipe } from "@/types/recipe";
-import { Box, Button, List, ListItem, TextField, Typography, Link } from "@mui/material";
-import { useState } from "react";
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ingredients?: string }>;
+}) {
+  const { ingredients: query = "" } = await searchParams;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function Home() {
-  const user = useUserContext();
-  const userSettings = useUserSettingsContext();
-  const updateIngredients = useUpdateIngredientsContext();
+  if (!user) {
+    return (
+      <section className="page-narrow">
+        <h1>PieceMeal</h1>
+        <p>
+          Decide what to cook with what you already have. Save your recipes,
+          then search them by the ingredients in your kitchen.
+        </p>
+        <ul>
+          <li>Save recipes with their ingredients and instructions.</li>
+          <li>Search your saved recipes by the ingredients on hand.</li>
+          <li>Use cooking mode to keep your screen awake while you cook.</li>
+        </ul>
+        <p>
+          <Link href="/login" className="button">
+            Sign in to get started
+          </Link>
+        </p>
+      </section>
+    );
+  }
 
-  const [ingredientsInput, setIngredientsInput] = useState("");
-  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
+  const searchedTerms = parseIngredients(query);
+  let matches: Recipe[] = [];
+  let loadError: string | null = null;
 
-  const handleUpdateIngredients = async () => {
-    const trimmedIngredients = ingredientsInput
-      .split(',')
-      .map(i => i.trim().toLowerCase())
-      .filter(i => i.length > 0);
+  if (searchedTerms.length > 0) {
+    const { data, error } = await supabase
+      .from("recipes")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    if (updateIngredients) {
-      await updateIngredients(trimmedIngredients);
-    }
-
-    if (userSettings?.recipes) {
-      const matching = userSettings.recipes.filter(recipe =>
-        trimmedIngredients.every(ing =>
-          recipe.ingredients.some(r => r.toLowerCase().includes(ing))
-        )
+    if (error) {
+      loadError = error.message;
+    } else {
+      matches = ((data as Recipe[]) ?? []).filter((recipe) =>
+        recipeMatches(recipe.ingredients, searchedTerms)
       );
-      setFilteredRecipes(matching);
     }
-  };
+  }
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="flex-start"
-      minHeight="80vh"
-      textAlign="center"
-      px={2}
-      sx={{ mt: 8 }}
-    >
-      <Typography variant="h1" sx={{ color: colors.piecemeal_green }}>PieceMeal</Typography>
-      <img src="/piecemeal_logo.png" alt="Piecemeal Logo" width={300} height={300} style={{ marginBottom: 20 }} />
+    <>
+      <h1>Find recipes</h1>
+      <p>
+        Search your saved recipes for ones that use the ingredients you have
+        on hand.
+      </p>
 
-      {user ? (
-        <>
-          <Typography variant="h4" sx={{ color: colors.piecemeal_green }}>
-            Welcome, {user.displayName || "friend"}!
-          </Typography>
+      <form role="search" method="get" action="/" className="field">
+        <label htmlFor="ingredients">Ingredients you have</label>
+        <p className="field-help" id="ingredients-help">
+          Separate ingredients with commas. For example: eggs, flour, milk.
+        </p>
+        <input
+          type="search"
+          id="ingredients"
+          name="ingredients"
+          defaultValue={query}
+          aria-describedby="ingredients-help"
+          autoComplete="off"
+        />
+        <p>
+          <button type="submit" className="button">
+            Search recipes
+          </button>
+        </p>
+      </form>
 
-          <Box  width="100%" maxWidth={500}>
-            <TextField
-              fullWidth
-              label="Ingredients on hand (comma-separated)"
-              value={ingredientsInput}
-              onChange={(e) => setIngredientsInput(e.target.value)}
-              variant="outlined"
-              margin="normal"
-            />
-            <Button variant="contained" onClick={handleUpdateIngredients} sx={{ backgroundColor: colors.piecemeal_orange, mt: 1 }}>
-              Find Matching Saved Recipes
-            </Button>
-          </Box>
+      {loadError ? (
+        <p role="alert" className="alert alert-error">
+          Could not load your recipes: {loadError}
+        </p>
+      ) : null}
 
-          {filteredRecipes.length > 0 && (
-            <Box mt={2}>
-              <Typography variant="h5" gutterBottom sx={{color: colors.piecemeal_green}}>Matching Recipes:</Typography>
-              <List>
-                {filteredRecipes.map((recipe) => (
-                  <ListItem key={recipe.id}>
-                    <Link
-                      href={`/saved/${recipe.id}`}
-                      style={{
-                        textDecoration: 'none',
-                        color: colors.piecemeal_green,
-                      }}
-                    >
-                      {recipe.name}
-                    </Link>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
+      {searchedTerms.length > 0 && !loadError ? (
+        <section aria-labelledby="results-heading">
+          <h2 id="results-heading">
+            {matches.length === 0
+              ? "No matching recipes"
+              : `${matches.length} matching ${
+                  matches.length === 1 ? "recipe" : "recipes"
+                }`}
+          </h2>
+          {matches.length === 0 ? (
+            <p>
+              None of your saved recipes use all of:{" "}
+              {searchedTerms.join(", ")}. Try fewer ingredients, or{" "}
+              <Link href="/recipes/new">add a new recipe</Link>.
+            </p>
+          ) : (
+            <ul>
+              {matches.map((recipe) => (
+                <li key={recipe.id}>
+                  <Link href={`/recipes/${recipe.id}`}>{recipe.name}</Link>
+                </li>
+              ))}
+            </ul>
           )}
-        </>
-      ) : (
-        <Typography variant="h5" gutterBottom sx={{ color: colors.piecemeal_green }}>
-          Please log in to continue.
-        </Typography>
-      )}
-    </Box>
+        </section>
+      ) : null}
+    </>
   );
 }
