@@ -20,8 +20,8 @@ const atkinson = Atkinson_Hyperlegible({
 
 export const metadata: Metadata = {
   title: {
-    default: "PieceMeal",
-    template: "%s · PieceMeal",
+    default: "Piece-Meal",
+    template: "%s · Piece-Meal",
   },
   description:
     "Save recipes and find what you can cook with the ingredients you have.",
@@ -34,24 +34,13 @@ export const viewport: Viewport = {
   ],
 };
 
-// Applies a stored theme override before first paint to avoid a flash of
-// the wrong theme. Kept inline so it runs before any rendering.
-const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.dataset.theme=t}}catch(e){}})()`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${ibmPlexMono.variable} ${atkinson.variable}`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
+    <html lang="en" className={`${ibmPlexMono.variable} ${atkinson.variable}`}>
       <body>
         <a className="skip-link" href="#main-content">
           Skip to main content

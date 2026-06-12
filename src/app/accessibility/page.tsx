@@ -9,7 +9,7 @@ export default function AccessibilityPage() {
     <section className="page-narrow">
       <h1>Accessibility statement</h1>
       <p>
-        PieceMeal is designed to conform to the Web Content Accessibility
+        Piece-Meal is designed to conform to the Web Content Accessibility
         Guidelines (WCAG) 2.2 at Level AAA.
       </p>
 

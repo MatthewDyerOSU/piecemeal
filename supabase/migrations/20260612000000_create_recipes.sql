@@ -1,4 +1,4 @@
--- PieceMeal: recipes table with row-level security.
+-- Piece-Meal: recipes table with row-level security.
 -- Run this in the Supabase SQL editor (or via `supabase db push`).
 
 create table if not exists public.recipes (
