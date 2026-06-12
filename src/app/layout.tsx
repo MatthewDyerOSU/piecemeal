@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, DM_Serif_Display, DM_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Atkinson_Hyperlegible } from "next/font/google";
 import Link from "next/link";
 import NavBar from "@/components/NavBar";
 import "./globals.css";
@@ -11,16 +11,10 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-mono",
 });
 
-const dmSerifDisplay = DM_Serif_Display({
+const atkinson = Atkinson_Hyperlegible({
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
-  variable: "--font-serif",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500"],
   variable: "--font-sans",
 });
 
@@ -53,7 +47,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${ibmPlexMono.variable} ${dmSerifDisplay.variable} ${dmSans.variable}`}
+      className={`${ibmPlexMono.variable} ${atkinson.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

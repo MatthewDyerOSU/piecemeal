@@ -1,11 +1,12 @@
 /*
- * PieceMeal design system — themed to match matthew-dyer.com.
+ * PieceMeal design system — editorial structure adapted from
+ * matthew-dyer.com (hairline sections, mono eyebrow labels, narrow
+ * column) with its own identity: Atkinson Hyperlegible type and an
+ * emerald accent.
  *
- * All theming lives in the custom properties below. Colors keep the
- * personal site's hues but are adjusted where needed to meet WCAG 2.2 AAA
- * contrast: body text >= 7:1, large text >= 4.5:1, form control
- * boundaries >= 3:1. (Original #6b7280 muted and #185FA5/#378ADD accents
- * fall short of 7:1, so they are darkened/brightened slightly.)
+ * All theming lives in the custom properties below. Every color pairing
+ * meets WCAG 2.2 AAA contrast: body text >= 7:1, large text >= 4.5:1,
+ * form control boundaries >= 3:1.
  */
 
 :root {
@@ -13,22 +14,21 @@
 
   /* Font variables are injected by next/font in layout.tsx; the values
      here are fallbacks only. */
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-sans: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   --color-bg: #ffffff;
   --color-surface: #f9f9f8;
   --color-text: #171717;            /* 16.1:1 on --color-bg */
   --color-text-muted: #4b5563;      /* 7.2:1 on --color-bg and surface */
-  --color-accent: #14528c;          /* 8.0:1 on --color-bg (from #185FA5) */
-  --color-on-accent: #ffffff;       /* 8.0:1 on --color-accent */
-  --color-link: #14528c;
+  --color-accent: #065f46;          /* 7.7:1 on --color-bg (deep emerald) */
+  --color-on-accent: #ffffff;       /* 7.7:1 on --color-accent */
+  --color-link: #065f46;
   --color-border: rgba(0, 0, 0, 0.12);   /* decorative hairlines */
   --color-border-strong: #767676;         /* form controls: 4.5:1 */
   --color-error: #991b1b;           /* 8.0:1 on --color-bg */
   --color-success: #14532d;         /* 9.9:1 on --color-bg */
-  --color-focus: #14528c;
+  --color-focus: #065f46;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -58,14 +58,14 @@
     --color-surface: #1a1a18;
     --color-text: #ededed;          /* 16.4:1 on --color-bg */
     --color-text-muted: #a8b1bd;    /* 7.6:1 on surface */
-    --color-accent: #82bcf5;        /* 9.5:1 on --color-bg (from #378ADD) */
+    --color-accent: #6ee7b7;        /* 12.6:1 on --color-bg (bright emerald) */
     --color-on-accent: #0f0f0e;     /* 9.5:1 on --color-accent */
-    --color-link: #82bcf5;
+    --color-link: #6ee7b7;
     --color-border: rgba(255, 255, 255, 0.12);
     --color-border-strong: #8a8a8a;
     --color-error: #ffb4ab;
     --color-success: #9be3b0;
-    --color-focus: #82bcf5;
+    --color-focus: #6ee7b7;
   }
 }
 
@@ -74,14 +74,14 @@
   --color-surface: #1a1a18;
   --color-text: #ededed;
   --color-text-muted: #a8b1bd;
-  --color-accent: #82bcf5;
+  --color-accent: #6ee7b7;
   --color-on-accent: #0f0f0e;
-  --color-link: #82bcf5;
+  --color-link: #6ee7b7;
   --color-border: rgba(255, 255, 255, 0.12);
   --color-border-strong: #8a8a8a;
   --color-error: #ffb4ab;
   --color-success: #9be3b0;
-  --color-focus: #82bcf5;
+  --color-focus: #6ee7b7;
 }
 
 :root[data-theme="light"] {
@@ -127,10 +127,10 @@ body {
 /* --- Typography --- */
 
 h1 {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: 2.5rem;
+  font-weight: 700;
+  font-size: 2.25rem;
   line-height: 1.15;
+  letter-spacing: -0.01em;
   margin: 0 0 var(--space-3);
   max-width: var(--measure);
 }
@@ -148,7 +148,7 @@ h3 {
 
 h2 {
   font-size: 1.15rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 /* Small-caps mono section label, like the section headings on
@@ -246,8 +246,8 @@ ol {
 }
 
 .wordmark {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: var(--color-text);
   text-decoration: none;
   display: inline-flex;
@@ -273,7 +273,7 @@ ol {
   align-items: center;
   min-height: var(--target-min);
   padding: 0 var(--space-2);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 0.9rem;
   color: var(--color-text);
   text-decoration: none;
@@ -419,7 +419,7 @@ main:focus {
   color: var(--color-on-accent);
   font: inherit;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
 }
@@ -453,7 +453,7 @@ main:focus {
 
 .field label {
   display: block;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: var(--space-1);
 }
 
@@ -489,7 +489,7 @@ textarea[aria-invalid="true"] {
 .field-error {
   margin: var(--space-1) 0 0;
   color: var(--color-error);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 /* --- Alerts and status messages --- */
@@ -557,7 +557,7 @@ textarea[aria-invalid="true"] {
 }
 
 .cooking-mode-status {
-  font-weight: 500;
+  font-weight: 700;
   min-height: 1.65em;
 }
 
