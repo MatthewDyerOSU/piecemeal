@@ -30,6 +30,15 @@
   --color-success: #14532d;         /* 9.9:1 on --color-bg */
   --color-focus: #065f46;
 
+  /* Tag pills: every fill/text pairing >= 7:1, and the outline-pill text
+     colors are >= 7:1 against --color-bg. */
+  --tag-healthy-bg: #065f46;        /* 7.7:1 with white text */
+  --tag-healthy-fg: #ffffff;
+  --tag-quick-bg: #1e3a8a;          /* 10.3:1 with white text */
+  --tag-quick-fg: #ffffff;
+  --tag-easy-bg: #5b21b6;           /* 9.0:1 with white text */
+  --tag-easy-fg: #ffffff;
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 1rem;
@@ -58,6 +67,13 @@
     --color-error: #ffb4ab;
     --color-success: #9be3b0;
     --color-focus: #6ee7b7;
+
+    --tag-healthy-bg: #6ee7b7;      /* 11.7:1 with near-black text */
+    --tag-healthy-fg: #0f0f0e;
+    --tag-quick-bg: #93c5fd;        /* 10.6:1 with near-black text */
+    --tag-quick-fg: #0f0f0e;
+    --tag-easy-bg: #d8b4fe;         /* 10.8:1 with near-black text */
+    --tag-easy-fg: #0f0f0e;
   }
 }
 
@@ -420,10 +436,15 @@ main:focus {
   margin-bottom: var(--space-4);
 }
 
-.field label {
+.field label,
+.field-label-like {
   display: block;
   font-weight: 700;
   margin-bottom: var(--space-1);
+}
+
+.field-label-like {
+  margin-top: 0;
 }
 
 .field-help {
@@ -678,6 +699,83 @@ legend {
   gap: var(--space-2);
 }
 
+/* --- Tag pills (static on cards, checkbox pills in filters/forms) --- */
+
+.pill-healthy {
+  --pill-bg: var(--tag-healthy-bg);
+  --pill-fg: var(--tag-healthy-fg);
+}
+
+.pill-quick {
+  --pill-bg: var(--tag-quick-bg);
+  --pill-fg: var(--tag-quick-fg);
+}
+
+.pill-easy {
+  --pill-bg: var(--tag-easy-bg);
+  --pill-fg: var(--tag-easy-fg);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem var(--space-3);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+}
+
+.pill-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+}
+
+.pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pill-checkbox {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  border-radius: 999px;
+  border: 2px solid var(--pill-bg);
+  padding: 0 var(--space-4);
+  color: var(--pill-bg);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pill-checkbox:has(input:checked) {
+  background: var(--pill-bg);
+  color: var(--pill-fg);
+}
+
+/* State is also marked with a check, not color alone. */
+.pill-checkbox:has(input:checked) .pill-label::before {
+  content: "\2713 ";
+}
+
+.pill-checkbox:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 /* --- Random picker result --- */
 
 .picked-result {
@@ -728,15 +826,6 @@ legend {
   align-items: center;
   gap: var(--space-3);
   margin-top: var(--space-2);
-}
-
-.recipe-tag-list {
-  margin: 0;
-  justify-content: flex-end;
-}
-
-.recipe-tag-list .chip {
-  text-transform: capitalize;
 }
 
 /* --- Household --- */

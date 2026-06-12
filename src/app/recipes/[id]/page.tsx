@@ -39,9 +39,9 @@ export default async function RecipeDetailPage({
       <h1>{recipe.name}</h1>
 
       {(recipe.tags ?? []).length > 0 ? (
-        <ul className="chip-list recipe-tag-list">
+        <ul className="tag-list">
           {recipe.tags.map((tag) => (
-            <li className="chip" key={tag}>
+            <li className={`tag-pill pill-${tag}`} key={tag}>
               {tag}
             </li>
           ))}
