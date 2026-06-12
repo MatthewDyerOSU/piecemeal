@@ -46,7 +46,9 @@ export default async function RecipeDetailPage({
       <CookingMode />
 
       <section aria-labelledby="ingredients-heading">
-        <h2 id="ingredients-heading">Ingredients</h2>
+        <h2 className="eyebrow" id="ingredients-heading">
+          Ingredients
+        </h2>
         <ul>
           {recipe.ingredients.map((ingredient, index) => (
             <li key={index}>{ingredient}</li>
@@ -55,7 +57,9 @@ export default async function RecipeDetailPage({
       </section>
 
       <section aria-labelledby="instructions-heading">
-        <h2 id="instructions-heading">Instructions</h2>
+        <h2 className="eyebrow" id="instructions-heading">
+          Instructions
+        </h2>
         {instructionSteps.length === 0 ? (
           <p>No instructions were added for this recipe.</p>
         ) : (

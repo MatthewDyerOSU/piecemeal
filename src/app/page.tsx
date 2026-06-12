@@ -16,16 +16,25 @@ export default async function HomePage({
 
   if (!user) {
     return (
-      <section className="page-narrow">
-        <h1>PieceMeal</h1>
-        <p>
-          Decide what to cook with what you already have. Save your recipes,
-          then search them by the ingredients in your kitchen.
+      <section className="hero">
+        <p className="eyebrow">Personal recipe manager</p>
+        <h1>
+          Cook with what
+          <br />
+          you <em>already</em> have.
+        </h1>
+        <p className="lede">
+          Save your recipes, search them by the ingredients in your kitchen,
+          and keep your screen awake while you cook.
         </p>
-        <ul>
-          <li>Save recipes with their ingredients and instructions.</li>
-          <li>Search your saved recipes by the ingredients on hand.</li>
-          <li>Use cooking mode to keep your screen awake while you cook.</li>
+        <ul className="chip-list">
+          {["Ingredient Search", "Saved Recipes", "Cooking Mode"].map(
+            (feature) => (
+              <li className="chip" key={feature}>
+                {feature}
+              </li>
+            )
+          )}
         </ul>
         <p>
           <Link href="/login" className="button">
@@ -91,7 +100,7 @@ export default async function HomePage({
 
       {searchedTerms.length > 0 && !loadError ? (
         <section aria-labelledby="results-heading">
-          <h2 id="results-heading">
+          <h2 className="eyebrow" id="results-heading">
             {matches.length === 0
               ? "No matching recipes"
               : `${matches.length} matching ${
