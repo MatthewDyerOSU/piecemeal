@@ -449,6 +449,52 @@ textarea[aria-invalid="true"] {
 
 /* --- One-at-a-time list entry (ingredients, steps, search terms) --- */
 
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: auto;
+}
+
+legend {
+  font-weight: 700;
+  padding: 0;
+  margin-bottom: var(--space-1);
+}
+
+.ingredient-group {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin: 0 0 var(--space-3);
+  max-width: var(--narrow-width);
+}
+
+.ingredient-group-plain {
+  margin: 0 0 var(--space-3);
+  max-width: var(--narrow-width);
+}
+
+.group-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.group-header .group-name {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.group-header label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
 .item-entry {
   display: flex;
   flex-wrap: wrap;

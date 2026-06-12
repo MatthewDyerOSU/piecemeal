@@ -44,11 +44,26 @@ export default async function RecipeDetailPage({
         <h2 className="eyebrow" id="ingredients-heading">
           Ingredients
         </h2>
-        <ul>
-          {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
+        {recipe.ingredients.length === 0 ? (
+          <p>No ingredients were added for this recipe.</p>
+        ) : recipe.ingredients.length === 1 && !recipe.ingredients[0].name ? (
+          <ul>
+            {recipe.ingredients[0].items.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
+        ) : (
+          recipe.ingredients.map((group, groupIndex) => (
+            <section key={groupIndex}>
+              <h3>{group.name || "Other ingredients"}</h3>
+              <ul>
+                {group.items.map((ingredient, index) => (
+                  <li key={index}>{ingredient}</li>
+                ))}
+              </ul>
+            </section>
+          ))
+        )}
       </section>
 
       <section aria-labelledby="instructions-heading">
