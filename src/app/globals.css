@@ -778,6 +778,14 @@ legend {
   outline-offset: 2px;
 }
 
+/* --- Home: dinner picker section --- */
+
+.decide {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
 /* --- Random picker result --- */
 
 .picked-result {
