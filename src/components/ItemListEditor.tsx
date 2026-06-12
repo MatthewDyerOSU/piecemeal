@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import PasteList from "./PasteList";
+import EditableItemList from "./EditableItemList";
 
 type Props = {
   label: string;
@@ -22,9 +23,9 @@ type Props = {
 
 /**
  * One-at-a-time list entry: type an item, press Enter or the add button,
- * and it joins a visible, removable list. Additions and removals are
- * announced to screen readers via a polite live region, and focus returns
- * to the text box after each action.
+ * and it joins a visible list whose rows can be edited in place or
+ * removed. Changes are announced to screen readers via a polite live
+ * region, and focus returns to the text box after each addition.
  */
 export default function ItemListEditor({
   label,
@@ -53,14 +54,6 @@ export default function ItemListEditor({
     inputRef.current?.focus();
   }
 
-  function removeAt(index: number) {
-    const removed = items[index];
-    setItems((previous) => previous.filter((_, i) => i !== index));
-    setAnnouncement(`Removed ${removed}.`);
-    inputRef.current?.focus();
-  }
-
-  const ListTag = ordered ? "ol" : "ul";
   const describedBy = error ? `${id}-help ${id}-error` : `${id}-help`;
 
   return (
@@ -114,25 +107,16 @@ export default function ItemListEditor({
       <p aria-live="polite" className="visually-hidden">
         {announcement}
       </p>
-      {items.length > 0 ? (
-        <ListTag className="item-list">
-          {items.map((item, index) => (
-            <li key={`${index}-${item}`}>
-              <input type="hidden" name={name} value={item} />
-              <span className="item-row">
-                <span className="item-text">{item}</span>
-                <button
-                  type="button"
-                  className="button button-danger button-compact"
-                  onClick={() => removeAt(index)}
-                >
-                  Remove<span className="visually-hidden"> {item}</span>
-                </button>
-              </span>
-            </li>
-          ))}
-        </ListTag>
-      ) : null}
+      <EditableItemList
+        items={items}
+        ordered={ordered}
+        name={name}
+        onChange={(next, message) => {
+          setItems(next);
+          setAnnouncement(message);
+        }}
+        onEmpty={() => inputRef.current?.focus()}
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { IngredientGroup } from "@/types/recipe";
 import PasteList from "./PasteList";
+import EditableItemList from "./EditableItemList";
 
 type GroupStatus =
   | "naming" // name not locked in yet; only the name field shows
@@ -100,12 +101,6 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
     requestFocus("base-item");
   }
 
-  function removeBaseItem(index: number) {
-    setAnnouncement(`Removed ${baseItems[index]}.`);
-    setBaseItems((previous) => previous.filter((_, i) => i !== index));
-    requestFocus("base-item");
-  }
-
   function addGroup() {
     const key = nextKey.current++;
     setGroups((previous) => [
@@ -155,14 +150,6 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
     }
     update(group.key, { items: [...group.items, value], itemDraft: "" });
     setAnnouncement(`Added ${value} to ${group.name}.`);
-    requestFocus(`item-${group.key}`);
-  }
-
-  function removeItem(group: GroupState, index: number) {
-    setAnnouncement(`Removed ${group.items[index]} from ${group.name}.`);
-    update(group.key, {
-      items: group.items.filter((_, i) => i !== index),
-    });
     requestFocus(`item-${group.key}`);
   }
 
@@ -255,24 +242,14 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
             );
           }}
         />
-        {baseItems.length > 0 ? (
-          <ul className="item-list">
-            {baseItems.map((item, index) => (
-              <li key={`${index}-${item}`}>
-                <span className="item-row">
-                  <span className="item-text">{item}</span>
-                  <button
-                    type="button"
-                    className="button button-danger button-compact"
-                    onClick={() => removeBaseItem(index)}
-                  >
-                    Remove<span className="visually-hidden"> {item}</span>
-                  </button>
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <EditableItemList
+          items={baseItems}
+          onChange={(next, message) => {
+            setBaseItems(next);
+            setAnnouncement(message);
+          }}
+          onEmpty={() => requestFocus("base-item")}
+        />
       </div>
 
       {groups.map((group) => (
@@ -380,23 +357,19 @@ export default function IngredientGroupsEditor({ error }: { error?: string }) {
             </>
           ) : null}
 
-          {group.items.length > 0 ? (
+          {group.status === "open" ? (
+            <EditableItemList
+              items={group.items}
+              onChange={(next, message) => {
+                update(group.key, { items: next });
+                setAnnouncement(message);
+              }}
+              onEmpty={() => requestFocus(`item-${group.key}`)}
+            />
+          ) : group.items.length > 0 ? (
             <ul className="item-list">
               {group.items.map((item, index) => (
-                <li key={`${index}-${item}`}>
-                  <span className="item-row">
-                    <span className="item-text">{item}</span>
-                    {group.status === "open" ? (
-                      <button
-                        type="button"
-                        className="button button-danger button-compact"
-                        onClick={() => removeItem(group, index)}
-                      >
-                        Remove<span className="visually-hidden"> {item}</span>
-                      </button>
-                    ) : null}
-                  </span>
-                </li>
+                <li key={`${index}-${item}`}>{item}</li>
               ))}
             </ul>
           ) : null}
