@@ -34,10 +34,12 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   and remove controls. Items can repeat daily/weekly/monthly and
   auto-uncheck at the start of each period (lazy reset on page load; no
   background job).
-- **Household sharing** — accounts share one recipe collection: create a
-  household, share its invite code, and everyone in it sees, searches, and
-  can edit each other's recipes with separate sign-ins. A user can belong
-  to several households; each sees all of that user's recipes.
+- **Household sharing** — accounts share recipes via households: create a
+  household, share its invite code, and members can see and edit recipes
+  shared to it. Each recipe has an explicit share list (chosen in the edit
+  form) of the owner's households, so sharing is granular rather than
+  all-or-nothing; saved-recipe cards show (truncated) which households a
+  recipe reaches. A user can belong to several households.
 - **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
   Wake Lock API (needs HTTPS; gracefully explains itself on unsupported
   browsers).

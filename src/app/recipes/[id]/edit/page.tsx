@@ -35,13 +35,29 @@ export default async function EditRecipePage({
     notFound();
   }
 
+  const [{ data: householdData }, { data: shareData }] = await Promise.all([
+    supabase.from("households").select("id, name").order("name"),
+    supabase
+      .from("recipe_households")
+      .select("household_id")
+      .eq("recipe_id", recipe.id),
+  ]);
+  const households = (householdData as { id: string; name: string }[]) ?? [];
+  const sharedHouseholdIds = (
+    (shareData as { household_id: string }[]) ?? []
+  ).map((row) => row.household_id);
+
   return (
     <section className="page-narrow">
       <p>
         <Link href={`/recipes/${recipe.id}`}>Back to {recipe.name}</Link>
       </p>
       <h1>Edit {recipe.name}</h1>
-      <RecipeForm recipe={recipe} />
+      <RecipeForm
+        recipe={recipe}
+        households={households}
+        sharedHouseholdIds={sharedHouseholdIds}
+      />
     </section>
   );
 }

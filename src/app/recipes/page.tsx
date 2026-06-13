@@ -39,6 +39,50 @@ export default async function RecipesPage({
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
     );
 
+  // Household shares for the visible recipes. `households(name)` is null
+  // for households the viewer isn't in (RLS hides the name), so each
+  // recipe gets the names it can show plus a count of any it can't.
+  const shareByRecipe = new Map<
+    string,
+    { names: string[]; total: number }
+  >();
+  if (recipes.length > 0) {
+    const { data: shareData } = await supabase
+      .from("recipe_households")
+      .select("recipe_id, households(name)")
+      .in(
+        "recipe_id",
+        recipes.map((r) => r.id)
+      );
+    for (const row of (shareData as
+      | { recipe_id: string; households: { name: string } | null }[]
+      | null) ?? []) {
+      const entry = shareByRecipe.get(row.recipe_id) ?? {
+        names: [],
+        total: 0,
+      };
+      entry.total += 1;
+      if (row.households?.name) {
+        entry.names.push(row.households.name);
+      }
+      shareByRecipe.set(row.recipe_id, entry);
+    }
+  }
+
+  function shareSummary(recipeId: string): string | null {
+    const entry = shareByRecipe.get(recipeId);
+    if (!entry || entry.total === 0) {
+      return null;
+    }
+    const shown = entry.names.slice(0, 2);
+    const remaining = entry.total - shown.length;
+    const parts = [...shown];
+    if (remaining > 0) {
+      parts.push(`+${remaining}`);
+    }
+    return parts.join(", ");
+  }
+
   return (
     <>
       <h1>Saved recipes</h1>
@@ -101,13 +145,22 @@ export default async function RecipesPage({
                     ))}
                   </ul>
                 ) : null}
-                <div className="recipe-card-actions">
-                  <Link
-                    className="button button-secondary"
-                    href={`/recipes/${recipe.id}/edit`}
-                  >
-                    Edit<span className="visually-hidden"> {recipe.name}</span>
-                  </Link>
+                <div className="recipe-card-footer">
+                  {shareSummary(recipe.id) ? (
+                    <p className="recipe-share">
+                      <span className="recipe-share-label">Shared with</span>{" "}
+                      {shareSummary(recipe.id)}
+                    </p>
+                  ) : null}
+                  <div className="recipe-card-actions">
+                    <Link
+                      className="button button-secondary"
+                      href={`/recipes/${recipe.id}/edit`}
+                    >
+                      Edit
+                      <span className="visually-hidden"> {recipe.name}</span>
+                    </Link>
+                  </div>
                 </div>
               </article>
             </li>
