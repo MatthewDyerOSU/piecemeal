@@ -1349,3 +1349,48 @@ legend {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+
+/* --- Recipe sharing management (edit page) --- */
+
+.sharing-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  max-width: var(--narrow-width);
+}
+
+.sharing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sharing-list li {
+  max-width: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sharing-list li:last-child {
+  border-bottom: 0;
+}
+
+.sharing-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.sharing-name {
+  font-weight: 700;
+  flex: 1 1 8rem;
+}
+
+.sharing-status {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}

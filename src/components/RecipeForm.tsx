@@ -31,10 +31,12 @@ export default function RecipeForm({
   recipe,
   households = [],
   sharedHouseholdIds = [],
+  isOwner = true,
 }: {
   recipe?: Recipe;
   households?: ShareHousehold[];
   sharedHouseholdIds?: string[];
+  isOwner?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(
     recipe ? updateRecipe : createRecipe,
@@ -162,10 +164,14 @@ export default function RecipeForm({
         />
       </div>
 
-      <HouseholdShareSelect
-        households={households}
-        initialSelected={sharedHouseholdIds}
-      />
+      {/* Sharing is chosen here only when creating; on edit it's managed by
+          the immediate Sharing section beside this form. */}
+      {!recipe ? (
+        <HouseholdShareSelect
+          households={households}
+          initialSelected={sharedHouseholdIds}
+        />
+      ) : null}
 
       {remaining.length > 0 ? (
         <section
@@ -196,7 +202,7 @@ export default function RecipeForm({
       </button>
     </form>
 
-    {recipe ? (
+    {recipe && isOwner ? (
       <section
         aria-labelledby="delete-recipe-heading"
         className="delete-recipe"

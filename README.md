@@ -39,7 +39,10 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   shared to it. Each recipe has an explicit share list (chosen in the edit
   form) of the owner's households, so sharing is granular rather than
   all-or-nothing; saved-recipe cards show (truncated) which households a
-  recipe reaches. A user can belong to several households.
+  recipe reaches. On the edit page a Sharing section adds or removes the
+  recipe from each of your households immediately. Permanently deleting a
+  recipe (for everyone) is owner-only; other members can only remove it
+  from their own households. A user can belong to several households.
 - **Cooking mode** — on a recipe page, keeps the screen awake via the Screen
   Wake Lock API (needs HTTPS; gracefully explains itself on unsupported
   browsers).

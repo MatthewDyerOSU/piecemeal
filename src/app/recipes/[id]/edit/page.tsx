@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
 import RecipeForm from "@/components/RecipeForm";
+import RecipeSharing from "@/components/RecipeSharing";
 
 export const metadata: Metadata = {
   title: "Edit recipe",
@@ -47,16 +48,23 @@ export default async function EditRecipePage({
     (shareData as { household_id: string }[]) ?? []
   ).map((row) => row.household_id);
 
+  const myHouseholdIds = new Set(households.map((h) => h.id));
+  const sharedMine = sharedHouseholdIds.filter((id) => myHouseholdIds.has(id));
+  const otherHouseholdCount = sharedHouseholdIds.length - sharedMine.length;
+  const isOwner = recipe.user_id === user.id;
+
   return (
     <section className="page-narrow">
       <p>
         <Link href={`/recipes/${recipe.id}`}>Back to {recipe.name}</Link>
       </p>
       <h1>Edit {recipe.name}</h1>
-      <RecipeForm
-        recipe={recipe}
+      <RecipeForm recipe={recipe} isOwner={isOwner} />
+      <RecipeSharing
+        recipeId={recipe.id}
         households={households}
-        sharedHouseholdIds={sharedHouseholdIds}
+        initialSharedIds={sharedMine}
+        otherHouseholdCount={otherHouseholdCount}
       />
     </section>
   );
