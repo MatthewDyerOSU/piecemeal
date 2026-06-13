@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   matchesTagFilters,
   parseIngredients,
@@ -10,6 +11,43 @@ import {
   sanitizeTagFilters,
 } from "@/lib/recipes";
 import type { IngredientGroup } from "@/types/recipe";
+
+/** Household ids the current user belongs to. */
+async function userHouseholdIds(
+  supabase: SupabaseClient
+): Promise<string[]> {
+  const { data } = await supabase.from("households").select("id");
+  return ((data as { id: string }[]) ?? []).map((h) => h.id);
+}
+
+/**
+ * Set a recipe's household shares to `selected`, but only among the user's
+ * own households — shares to households the user isn't in are left intact,
+ * so one member can't silently revoke another household's access.
+ */
+async function reconcileRecipeShares(
+  supabase: SupabaseClient,
+  recipeId: string,
+  selected: string[]
+) {
+  const mine = await userHouseholdIds(supabase);
+  const keep = selected.filter((id) => mine.includes(id));
+  const remove = mine.filter((id) => !keep.includes(id));
+
+  if (remove.length > 0) {
+    await supabase
+      .from("recipe_households")
+      .delete()
+      .eq("recipe_id", recipeId)
+      .in("household_id", remove);
+  }
+  if (keep.length > 0) {
+    await supabase.from("recipe_households").upsert(
+      keep.map((household_id) => ({ recipe_id: recipeId, household_id })),
+      { onConflict: "recipe_id,household_id", ignoreDuplicates: true }
+    );
+  }
+}
 
 export type RecipeFormState = {
   errors: {
@@ -113,19 +151,29 @@ export async function createRecipe(
     return { errors };
   }
 
-  const { error } = await supabase.from("recipes").insert({
-    user_id: user.id,
-    name,
-    ingredients,
-    instructions: steps,
-    tags,
-  });
+  const { data: inserted, error } = await supabase
+    .from("recipes")
+    .insert({
+      user_id: user.id,
+      name,
+      ingredients,
+      instructions: steps,
+      tags,
+    })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !inserted) {
     return {
-      errors: { form: `Could not save the recipe: ${error.message}` },
+      errors: { form: `Could not save the recipe: ${error?.message ?? ""}` },
     };
   }
+
+  await reconcileRecipeShares(
+    supabase,
+    (inserted as { id: string }).id,
+    formData.getAll("households").map(String)
+  );
 
   revalidatePath("/recipes");
   redirect("/recipes");
@@ -165,6 +213,12 @@ export async function updateRecipe(
       errors: { form: `Could not save the recipe: ${error.message}` },
     };
   }
+
+  await reconcileRecipeShares(
+    supabase,
+    recipeId,
+    formData.getAll("households").map(String)
+  );
 
   revalidatePath("/recipes");
   revalidatePath(`/recipes/${recipeId}`);

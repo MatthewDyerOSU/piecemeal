@@ -11,6 +11,9 @@ import ItemListEditor from "@/components/ItemListEditor";
 import IngredientGroupsEditor from "@/components/IngredientGroupsEditor";
 import TagPills from "@/components/TagPills";
 import DeleteRecipeButton from "@/components/DeleteRecipeButton";
+import HouseholdShareSelect, {
+  type ShareHousehold,
+} from "@/components/HouseholdShareSelect";
 import { deleteRecipe } from "@/app/recipes/actions";
 
 const initialState: RecipeFormState = { errors: {} };
@@ -24,7 +27,15 @@ const initialState: RecipeFormState = { errors: {} };
  * back to any fields still in error — entries disappear as fields are
  * fixed.
  */
-export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
+export default function RecipeForm({
+  recipe,
+  households = [],
+  sharedHouseholdIds = [],
+}: {
+  recipe?: Recipe;
+  households?: ShareHousehold[];
+  sharedHouseholdIds?: string[];
+}) {
   const [state, formAction, pending] = useActionState(
     recipe ? updateRecipe : createRecipe,
     initialState
@@ -150,6 +161,11 @@ export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
           }
         />
       </div>
+
+      <HouseholdShareSelect
+        households={households}
+        initialSelected={sharedHouseholdIds}
+      />
 
       {remaining.length > 0 ? (
         <section

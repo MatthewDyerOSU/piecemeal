@@ -17,10 +17,19 @@ export default async function NewRecipePage() {
     redirect("/login");
   }
 
+  const { data: householdData } = await supabase
+    .from("households")
+    .select("id, name")
+    .order("name");
+  const households = (householdData as { id: string; name: string }[]) ?? [];
+
   return (
     <section className="page-narrow">
       <h1>Add a recipe</h1>
-      <RecipeForm />
+      <RecipeForm
+        households={households}
+        sharedHouseholdIds={households.map((h) => h.id)}
+      />
     </section>
   );
 }
