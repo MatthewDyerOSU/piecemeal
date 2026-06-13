@@ -7,10 +7,20 @@ const TAG_LABELS: Record<string, string> = {
 };
 
 /**
- * The three tag checkboxes styled as colored pills (matching the static
- * tag pills on recipe cards). Checked pills fill with the tag color and
- * gain a check mark, so state is never conveyed by color alone; the real
- * checkbox stays in the DOM for assistive tech and no-JS submission.
+ * The three tags as colored pills. Two modes:
+ *
+ * - Uncontrolled (default): real checkboxes inside the labels, visual via
+ *   :has(input:checked). Used by the GET filter form, where state lives in
+ *   the URL and the form works without JavaScript.
+ *
+ * - Controlled (pass `selected` + `onToggle`): toggle buttons whose state
+ *   is React-driven, with the selection submitted via hidden inputs. Used
+ *   in forms driven by server actions, which reset the DOM after each
+ *   submission — a reset would desync checkbox-based pills (visual and
+ *   announced state), so those forms must use this mode.
+ *
+ * Either way, a checked pill fills with the tag color and gains a check
+ * mark, so state is never conveyed by color alone.
  */
 export default function TagPills({
   name,
@@ -25,13 +35,39 @@ export default function TagPills({
   /** Visually hidden group label. */
   legend: string;
   describedBy?: string;
-  /** Uncontrolled initial state (GET filter forms). */
+  /** Uncontrolled initial state. */
   defaultSelected?: string[];
-  /** Controlled state: required in forms driven by server actions, which
-      React resets after each submission. Pass both selected and onToggle. */
+  /** Controlled state (pass with onToggle). */
   selected?: string[];
   onToggle?: (tag: string) => void;
 }) {
+  const controlled = selected !== undefined && onToggle !== undefined;
+
+  if (controlled) {
+    return (
+      <fieldset className="pill-fieldset">
+        <legend className="visually-hidden">{legend}</legend>
+        <div className="pill-list" aria-describedby={describedBy}>
+          {RECIPE_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              role="switch"
+              aria-checked={selected.includes(tag)}
+              className={`pill-checkbox pill-${tag}`}
+              onClick={() => onToggle(tag)}
+            >
+              <span className="pill-label">{TAG_LABELS[tag]}</span>
+            </button>
+          ))}
+        </div>
+        {selected.map((tag) => (
+          <input key={tag} type="hidden" name={name} value={tag} />
+        ))}
+      </fieldset>
+    );
+  }
+
   return (
     <fieldset className="pill-fieldset">
       <legend className="visually-hidden">{legend}</legend>
@@ -43,13 +79,7 @@ export default function TagPills({
               className="visually-hidden"
               name={name}
               value={tag}
-              checked={selected ? selected.includes(tag) : undefined}
-              onChange={
-                selected && onToggle ? () => onToggle(tag) : undefined
-              }
-              defaultChecked={
-                selected ? undefined : defaultSelected.includes(tag)
-              }
+              defaultChecked={defaultSelected.includes(tag)}
             />
             <span className="pill-label">{TAG_LABELS[tag]}</span>
           </label>

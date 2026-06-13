@@ -35,6 +35,11 @@ export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
   const [hasIngredients, setHasIngredients] = useState(
     Boolean(recipe && recipe.ingredients.length > 0)
   );
+  // Controlled so the selection survives the form reset React performs
+  // after a failed (validation-error) submission.
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    recipe?.tags ?? []
+  );
 
   const nameInvalid = Boolean(errors.name) && nameValue.trim() === "";
   const ingredientsInvalid = Boolean(errors.ingredients) && !hasIngredients;
@@ -132,7 +137,14 @@ export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
           name="tags"
           legend="Tags"
           describedBy="recipe-tags-help"
-          defaultSelected={recipe?.tags ?? []}
+          selected={selectedTags}
+          onToggle={(tag) =>
+            setSelectedTags((previous) =>
+              previous.includes(tag)
+                ? previous.filter((t) => t !== tag)
+                : [...previous, tag]
+            )
+          }
         />
       </div>
 

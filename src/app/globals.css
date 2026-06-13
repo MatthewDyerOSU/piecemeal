@@ -758,22 +758,27 @@ legend {
   border: 2px solid var(--pill-bg);
   padding: 0 var(--space-4);
   margin-bottom: 0;
+  background: transparent;
   color: var(--pill-bg);
+  font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
-.pill-checkbox:has(input:checked) {
+.pill-checkbox:has(input:checked),
+.pill-checkbox[aria-checked="true"] {
   background: var(--pill-bg);
   color: var(--pill-fg);
 }
 
 /* State is also marked with a check, not color alone. */
-.pill-checkbox:has(input:checked) .pill-label::before {
+.pill-checkbox:has(input:checked) .pill-label::before,
+.pill-checkbox[aria-checked="true"] .pill-label::before {
   content: "\2713 ";
 }
 
-.pill-checkbox:has(input:focus-visible) {
+.pill-checkbox:has(input:focus-visible),
+.pill-checkbox:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
