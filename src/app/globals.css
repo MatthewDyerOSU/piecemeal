@@ -349,8 +349,10 @@ ol {
     gap: var(--space-2);
   }
 
-  /* On compact screens the account control lives in the menu instead. */
-  .auth-area-bar {
+  /* On compact screens the account control lives in the menu instead.
+     Scoped to beat the later .auth-area { display: flex } base rule, which
+     otherwise wins on source order at equal specificity. */
+  .header-bar .auth-area-bar {
     display: none;
   }
 }
