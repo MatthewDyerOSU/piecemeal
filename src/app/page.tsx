@@ -36,15 +36,6 @@ export default async function HomePage({
           Save your recipes, search them by the ingredients in your kitchen,
           and keep your screen awake while you cook.
         </p>
-        <ul className="chip-list">
-          {["Ingredient Search", "Saved Recipes", "Cooking Mode"].map(
-            (feature) => (
-              <li className="chip" key={feature}>
-                {feature}
-              </li>
-            )
-          )}
-        </ul>
         <p>
           <Link href="/login" className="button">
             Sign in to get started
