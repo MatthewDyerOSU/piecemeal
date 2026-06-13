@@ -159,15 +159,17 @@ export default async function RecipesPage({
                 <h2>
                   <Link href={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                 </h2>
-                {(recipe.tags ?? []).length > 0 ? (
-                  <ul className="tag-list">
-                    {recipe.tags.map((tag) => (
-                      <li className={`tag-pill pill-${tag}`} key={tag}>
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <div className="recipe-card-tags">
+                  {(recipe.tags ?? []).length > 0 ? (
+                    <ul className="tag-list">
+                      {recipe.tags.map((tag) => (
+                        <li className={`tag-pill pill-${tag}`} key={tag}>
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
                 <p className="recipe-meta-line">
                   <span className="recipe-meta-key">By</span>{" "}
                   {ownerLabel(recipe)}

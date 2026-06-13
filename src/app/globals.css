@@ -806,6 +806,15 @@ legend {
   margin: 0;
 }
 
+/* Reserve the tag row's height even when a recipe has no tags, so the
+   owner / shared / Edit lines stay aligned across cards with and without
+   pills. */
+.recipe-card-tags {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+}
+
 .recipe-card-actions {
   display: flex;
   flex-wrap: wrap;
