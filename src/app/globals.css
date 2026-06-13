@@ -317,7 +317,9 @@ ol {
 
 /* --- Compact navigation (hamburger + dialog) --- */
 
-.nav-toggle {
+/* Scoped to beat the .button rule's display (equal specificity, later in
+   source) so the toggle is genuinely hidden at wide widths. */
+.header-nav .nav-toggle {
   display: none;
 }
 
@@ -341,10 +343,15 @@ ol {
     display: none;
   }
 
-  .nav-toggle {
+  .header-nav .nav-toggle {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  /* On compact screens the account control lives in the menu instead. */
+  .auth-area-bar {
+    display: none;
   }
 }
 
@@ -396,6 +403,12 @@ ol {
 .nav-dialog .nav-list a {
   padding: var(--space-2) 0;
   font-size: 1rem;
+}
+
+.nav-dialog-account {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
 .auth-area {

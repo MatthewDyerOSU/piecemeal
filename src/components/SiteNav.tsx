@@ -18,7 +18,7 @@ import NavLinks from "./NavLinks";
  * The inline list and the toggle are shown/hidden purely with CSS, so the
  * correct one renders on first paint; the dialog only mounts when opened.
  */
-export default function SiteNav() {
+export default function SiteNav({ account }: { account: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -154,6 +154,7 @@ export default function SiteNav() {
                 <nav aria-label="Main">
                   <NavLinks onNavigate={close} />
                 </nav>
+                <div className="nav-dialog-account">{account}</div>
               </div>
             </div>,
             document.body
