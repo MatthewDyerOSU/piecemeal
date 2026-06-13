@@ -788,16 +788,22 @@ legend {
 .recipe-card {
   display: flex;
   flex-direction: column;
+  /* One uniformly spaced stack: title, tags, owner, shared, Edit all get
+     the same gap, and cards stretch to equal height per grid row. */
+  gap: var(--space-3);
   width: 100%;
+}
+
+.recipe-card > * {
+  margin: 0;
 }
 
 .recipe-card h2 {
   font-size: 1.1rem;
 }
 
-.recipe-card-footer {
-  margin-top: auto;
-  padding-top: var(--space-3);
+.recipe-card .tag-list {
+  margin: 0;
 }
 
 .recipe-card-actions {
@@ -1334,8 +1340,9 @@ legend {
 }
 
 /* Truncated share summary on recipe cards — never grows the card. */
-.recipe-share {
-  margin: 0 0 var(--space-2);
+/* Owner and "shared with" lines on recipe cards — one line each, never
+   growing the card. */
+.recipe-meta-line {
   max-width: none;
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -1345,7 +1352,7 @@ legend {
   text-overflow: ellipsis;
 }
 
-.recipe-share-label {
+.recipe-meta-key {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }

@@ -69,6 +69,28 @@ export default async function RecipesPage({
     }
   }
 
+  // Owner display names come from household membership (the only place
+  // names are visible to the viewer); your own recipes show "You".
+  const nameByUser = new Map<string, string>();
+  if (recipes.length > 0) {
+    const { data: memberData } = await supabase
+      .from("household_members")
+      .select("user_id, display_name");
+    for (const m of (memberData as
+      | { user_id: string; display_name: string }[]
+      | null) ?? []) {
+      if (m.display_name && !nameByUser.has(m.user_id)) {
+        nameByUser.set(m.user_id, m.display_name);
+      }
+    }
+  }
+
+  function ownerLabel(recipe: Recipe): string {
+    return recipe.user_id === user.id
+      ? "You"
+      : nameByUser.get(recipe.user_id) ?? "A household member";
+  }
+
   function shareSummary(recipeId: string): string | null {
     const entry = shareByRecipe.get(recipeId);
     if (!entry || entry.total === 0) {
@@ -145,22 +167,23 @@ export default async function RecipesPage({
                     ))}
                   </ul>
                 ) : null}
-                <div className="recipe-card-footer">
-                  {shareSummary(recipe.id) ? (
-                    <p className="recipe-share">
-                      <span className="recipe-share-label">Shared with</span>{" "}
-                      {shareSummary(recipe.id)}
-                    </p>
-                  ) : null}
-                  <div className="recipe-card-actions">
-                    <Link
-                      className="button button-secondary"
-                      href={`/recipes/${recipe.id}/edit`}
-                    >
-                      Edit
-                      <span className="visually-hidden"> {recipe.name}</span>
-                    </Link>
-                  </div>
+                <p className="recipe-meta-line">
+                  <span className="recipe-meta-key">By</span>{" "}
+                  {ownerLabel(recipe)}
+                </p>
+                {shareSummary(recipe.id) ? (
+                  <p className="recipe-meta-line">
+                    <span className="recipe-meta-key">Shared with</span>{" "}
+                    {shareSummary(recipe.id)}
+                  </p>
+                ) : null}
+                <div className="recipe-card-actions">
+                  <Link
+                    className="button button-secondary"
+                    href={`/recipes/${recipe.id}/edit`}
+                  >
+                    Edit<span className="visually-hidden"> {recipe.name}</span>
+                  </Link>
                 </div>
               </article>
             </li>
