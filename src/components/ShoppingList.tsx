@@ -235,9 +235,8 @@ export default function ShoppingList({
               Export
             </h2>
             <p className="field-help">
-              Take the list to the store. The in-browser list above is the
-              easiest shared option — it stays in sync on both phones. To use
-              your phone&apos;s own app instead:
+              Take the list to the store. Check items off in the browser
+              above, or use your phone&apos;s own app:
             </p>
             <div className="shopping-actions">
               <button

@@ -23,11 +23,11 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   bullets and numbering automatically.
   Ingredients can be split into named groups (e.g. "Salmon" / "Avocado
   salsa") that render as their own subheaded lists on the recipe page.
-- **Shopping list** — add a recipe's ingredients to a household-shared
-  list, edit or remove items and check them off (with strikethrough) as
-  you shop in the browser, and export to Apple Reminders (.ics, tappable
-  checkboxes on iPhone) or a plain-text checklist (.txt, for Apple/Samsung
-  Notes).
+- **Shopping list** — add a recipe's ingredients to your own (per-user,
+  not shared) list, edit or remove items and check them off (with
+  strikethrough) as you shop in the browser, and export to Apple Reminders
+  (.ics, tappable checkboxes on iPhone) or a plain-text checklist (.txt,
+  for Apple/Samsung Notes).
 - **Household sharing** — accounts share one recipe collection: create a
   household, share its invite code, and everyone in it sees, searches, and
   can edit each other's recipes with separate sign-ins. A user can belong

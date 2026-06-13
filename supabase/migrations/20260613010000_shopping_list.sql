@@ -1,7 +1,7 @@
--- Piece-Meal: a household-shared shopping list.
--- Items are owned by their creator and visible/editable across the
--- household, mirroring the recipe sharing policies. Run this in the
--- Supabase SQL editor before deploying the shopping-list version.
+-- Piece-Meal: a per-user shopping list.
+-- Unlike recipes, shopping lists are NOT shared across a household — each
+-- person keeps their own, visible and editable only by them. Run this in
+-- the Supabase SQL editor before deploying the shopping-list version.
 
 create table if not exists public.shopping_list_items (
   id uuid primary key default gen_random_uuid(),
@@ -16,19 +16,19 @@ create index if not exists shopping_list_items_user_id_idx
 
 alter table public.shopping_list_items enable row level security;
 
-create policy "View shopping items in your household"
+create policy "View your own shopping items"
   on public.shopping_list_items for select
-  using ((select auth.uid()) = user_id or public.shares_household_with(user_id));
+  using ((select auth.uid()) = user_id);
 
 create policy "Add your own shopping items"
   on public.shopping_list_items for insert
   with check ((select auth.uid()) = user_id);
 
-create policy "Update shopping items in your household"
+create policy "Update your own shopping items"
   on public.shopping_list_items for update
-  using ((select auth.uid()) = user_id or public.shares_household_with(user_id))
-  with check ((select auth.uid()) = user_id or public.shares_household_with(user_id));
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
-create policy "Delete shopping items in your household"
+create policy "Delete your own shopping items"
   on public.shopping_list_items for delete
-  using ((select auth.uid()) = user_id or public.shares_household_with(user_id));
+  using ((select auth.uid()) = user_id);

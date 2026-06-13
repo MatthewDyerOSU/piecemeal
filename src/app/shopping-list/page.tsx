@@ -29,8 +29,8 @@ export default async function ShoppingListPage() {
     <section className="page-narrow">
       <h1>Shopping list</h1>
       <p>
-        Check items off as you shop. Everyone in your household shares this
-        list.
+        Check items off as you shop. This list is your own — each person
+        keeps a separate one.
       </p>
 
       {error ? (
