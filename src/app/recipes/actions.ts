@@ -214,15 +214,49 @@ export async function updateRecipe(
     };
   }
 
-  await reconcileRecipeShares(
-    supabase,
-    recipeId,
-    formData.getAll("households").map(String)
-  );
-
+  // Sharing is managed separately on the edit page (immediate actions), so
+  // updating recipe content no longer touches the share list.
   revalidatePath("/recipes");
   revalidatePath(`/recipes/${recipeId}`);
   redirect(`/recipes/${recipeId}`);
+}
+
+/**
+ * Add or remove a recipe from a single household, taking effect
+ * immediately. RLS restricts this to households the user belongs to and
+ * recipes they can access.
+ */
+export async function setRecipeShare(
+  recipeId: string,
+  householdId: string,
+  shared: boolean
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (shared) {
+    await supabase
+      .from("recipe_households")
+      .upsert(
+        { recipe_id: recipeId, household_id: householdId },
+        { onConflict: "recipe_id,household_id", ignoreDuplicates: true }
+      );
+  } else {
+    await supabase
+      .from("recipe_households")
+      .delete()
+      .eq("recipe_id", recipeId)
+      .eq("household_id", householdId);
+  }
+
+  revalidatePath("/recipes");
+  revalidatePath(`/recipes/${recipeId}`);
+  revalidatePath(`/recipes/${recipeId}/edit`);
 }
 
 export async function deleteRecipe(formData: FormData) {

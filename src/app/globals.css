@@ -788,16 +788,31 @@ legend {
 .recipe-card {
   display: flex;
   flex-direction: column;
+  /* One uniformly spaced stack: title, tags, owner, shared, Edit all get
+     the same gap, and cards stretch to equal height per grid row. */
+  gap: var(--space-3);
   width: 100%;
+}
+
+.recipe-card > * {
+  margin: 0;
 }
 
 .recipe-card h2 {
   font-size: 1.1rem;
 }
 
-.recipe-card-footer {
-  margin-top: auto;
-  padding-top: var(--space-3);
+.recipe-card .tag-list {
+  margin: 0;
+}
+
+/* Reserve the tag row's height even when a recipe has no tags, so the
+   owner / shared / Edit lines stay aligned across cards with and without
+   pills. */
+.recipe-card-tags {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
 }
 
 .recipe-card-actions {
@@ -1334,8 +1349,9 @@ legend {
 }
 
 /* Truncated share summary on recipe cards — never grows the card. */
-.recipe-share {
-  margin: 0 0 var(--space-2);
+/* Owner and "shared with" lines on recipe cards — one line each, never
+   growing the card. */
+.recipe-meta-line {
   max-width: none;
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -1345,7 +1361,52 @@ legend {
   text-overflow: ellipsis;
 }
 
-.recipe-share-label {
+.recipe-meta-key {
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+/* --- Recipe sharing management (edit page) --- */
+
+.sharing-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  max-width: var(--narrow-width);
+}
+
+.sharing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sharing-list li {
+  max-width: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sharing-list li:last-child {
+  border-bottom: 0;
+}
+
+.sharing-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.sharing-name {
+  font-weight: 700;
+  flex: 1 1 8rem;
+}
+
+.sharing-status {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
 }
