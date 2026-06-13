@@ -26,8 +26,8 @@ export default function AccessibilityPage() {
       <h2>Feedback</h2>
       <p>
         If you find any part of this site difficult to use, please email{" "}
-        <a href="mailto:Matt.Dyer@accessabilityofficer.com">
-          Matt.Dyer@accessabilityofficer.com
+        <a href="mailto:matt@matthew-dyer.com">
+          matt@matthew-dyer.com
         </a>
         .
       </p>
