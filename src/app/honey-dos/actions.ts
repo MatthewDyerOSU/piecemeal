@@ -84,10 +84,13 @@ export async function deleteHoneyDo(id: string) {
 
 export async function clearCheckedHoneyDos(householdId: string) {
   const { supabase } = await requireClient();
+  // Only clear completed one-off items; recurring chores are meant to come
+  // back, so a checked recurring item is left in place.
   await supabase
     .from("honey_dos")
     .delete()
     .eq("household_id", householdId)
-    .eq("checked", true);
+    .eq("checked", true)
+    .eq("cadence", "none");
   revalidatePath("/honey-dos");
 }

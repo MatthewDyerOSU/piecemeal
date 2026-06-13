@@ -148,12 +148,18 @@ export default function HoneyDos({
   }
 
   function clearChecked() {
-    setItems((previous) => previous.filter((i) => !i.checked));
-    setAnnouncement("Cleared checked items.");
+    setItems((previous) =>
+      previous.filter((i) => !(i.checked && i.cadence === "none"))
+    );
+    setAnnouncement("Cleared completed one-off items.");
     startTransition(() => clearCheckedHoneyDos(householdId));
   }
 
   const checkedCount = items.filter((i) => i.checked).length;
+  // Recurring items are excluded from "clear" — they are meant to recur.
+  const clearableCount = items.filter(
+    (i) => i.checked && i.cadence === "none"
+  ).length;
 
   function cadenceSelect(
     id: string,
@@ -398,14 +404,14 @@ export default function HoneyDos({
             </section>
           ))}
 
-          {checkedCount > 0 ? (
+          {clearableCount > 0 ? (
             <div className="shopping-actions">
               <button
                 type="button"
                 className="button button-secondary"
                 onClick={clearChecked}
               >
-                Clear {checkedCount} done
+                Clear {clearableCount} done
               </button>
             </div>
           ) : null}
