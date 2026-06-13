@@ -13,3 +13,12 @@ export type Recipe = {
   tags: string[];
   created_at: string;
 };
+
+export type RecipeComment = {
+  id: string;
+  recipe_id: string;
+  user_id: string;
+  author_name: string;
+  body: string;
+  created_at: string;
+};

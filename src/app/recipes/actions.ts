@@ -197,6 +197,23 @@ export async function updateRecipe(
     return { errors: { form: "Could not tell which recipe to update." } };
   }
 
+  // Editing a recipe's content is owner-only. RLS enforces this too (a
+  // non-owner update simply matches no rows), but checking here lets us
+  // report it clearly instead of silently "succeeding".
+  const { data: existing } = await supabase
+    .from("recipes")
+    .select("user_id")
+    .eq("id", recipeId)
+    .maybeSingle();
+  if (!existing) {
+    return { errors: { form: "That recipe no longer exists." } };
+  }
+  if ((existing as { user_id: string }).user_id !== user.id) {
+    return {
+      errors: { form: "Only the recipe's owner can edit it." },
+    };
+  }
+
   const { name, tags, ingredients, steps, errors } =
     parseRecipeForm(formData);
   if (Object.keys(errors).length > 0) {
@@ -276,6 +293,72 @@ export async function deleteRecipe(formData: FormData) {
 
   revalidatePath("/recipes");
   redirect("/recipes");
+}
+
+export type CommentFormState = {
+  /** Set after a successful post so the form can clear and refocus. */
+  ok?: boolean;
+  error?: string;
+};
+
+/**
+ * Add a comment to a recipe. Anyone who can access the recipe may comment;
+ * the database function enforces access and records the author's name.
+ */
+export async function addRecipeComment(
+  _previousState: CommentFormState,
+  formData: FormData
+): Promise<CommentFormState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  const recipeId = String(formData.get("recipe-id") ?? "");
+  const body = String(formData.get("body") ?? "").trim();
+  if (!recipeId) {
+    return { error: "Could not tell which recipe to comment on." };
+  }
+  if (!body) {
+    return { error: "Enter a comment before posting." };
+  }
+
+  const { error } = await supabase.rpc("add_recipe_comment", {
+    rid: recipeId,
+    comment_body: body,
+  });
+  if (error) {
+    return { error: `Could not post your comment: ${error.message}` };
+  }
+
+  revalidatePath(`/recipes/${recipeId}`);
+  return { ok: true };
+}
+
+/**
+ * Remove a comment. RLS restricts this to the comment's author and the
+ * recipe's owner.
+ */
+export async function deleteRecipeComment(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    redirect("/login");
+  }
+
+  const id = String(formData.get("comment-id") ?? "");
+  const recipeId = String(formData.get("recipe-id") ?? "");
+  if (id) {
+    await supabase.from("recipe_comments").delete().eq("id", id);
+  }
+  if (recipeId) {
+    revalidatePath(`/recipes/${recipeId}`);
+  }
 }
 
 export type RandomPickState =

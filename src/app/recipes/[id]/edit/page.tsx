@@ -58,8 +58,16 @@ export default async function EditRecipePage({
       <p>
         <Link href={`/recipes/${recipe.id}`}>Back to {recipe.name}</Link>
       </p>
-      <h1>Edit {recipe.name}</h1>
-      <RecipeForm recipe={recipe} isOwner={isOwner} />
+      <h1>{isOwner ? `Edit ${recipe.name}` : `Manage ${recipe.name}`}</h1>
+      {isOwner ? (
+        <RecipeForm recipe={recipe} isOwner={isOwner} />
+      ) : (
+        <p className="field-help">
+          Only the recipe&apos;s owner can edit its ingredients and steps.
+          You can still choose which of your households it&apos;s shared
+          with below.
+        </p>
+      )}
       <RecipeSharing
         recipeId={recipe.id}
         households={households}
