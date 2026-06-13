@@ -185,7 +185,10 @@ export default async function RecipesPage({
                     className="button button-secondary"
                     href={`/recipes/${recipe.id}/edit`}
                   >
-                    Edit<span className="visually-hidden"> {recipe.name}</span>
+                    {recipe.user_id === currentUserId
+                      ? "Edit"
+                      : "Manage sharing"}
+                    <span className="visually-hidden"> {recipe.name}</span>
                   </Link>
                 </div>
               </article>

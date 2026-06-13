@@ -1410,3 +1410,96 @@ legend {
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
 }
+
+/* --- Recipe comments --- */
+
+.comments-section {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  max-width: var(--narrow-width);
+}
+
+.comment-form {
+  margin-bottom: var(--space-4);
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.comment {
+  max-width: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+.comment-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.comment-author {
+  font-weight: 700;
+}
+
+.comment-when {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.comment-body {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.comments-empty {
+  margin-top: var(--space-3);
+}
+
+/* --- Narrow viewports: keep editor rows readable --- */
+
+/* On phones the text + Edit/Remove (or Save/Cancel) buttons were sharing
+   one row, squeezing item text into a one-word-per-line column. Below
+   this width the text gets the full row and the actions drop beneath it. */
+@media (max-width: 35.99rem) {
+  .item-row {
+    flex-wrap: wrap;
+  }
+
+  .item-text {
+    flex: 1 1 100%;
+  }
+
+  .item-actions {
+    margin-left: auto;
+  }
+
+  .item-row-editing input {
+    flex: 1 1 100%;
+  }
+
+  .comment-head form {
+    margin-left: auto;
+  }
+}

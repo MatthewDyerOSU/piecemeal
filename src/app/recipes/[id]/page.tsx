@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Recipe } from "@/types/recipe";
+import type { Recipe, RecipeComment } from "@/types/recipe";
 import { allIngredients } from "@/lib/recipes";
 import CookingMode from "@/components/CookingMode";
 import AddToShoppingList from "@/components/AddToShoppingList";
+import RecipeComments from "@/components/RecipeComments";
 
 export default async function RecipeDetailPage({
   params,
@@ -31,6 +32,13 @@ export default async function RecipeDetailPage({
   if (!recipe) {
     notFound();
   }
+
+  const { data: commentData } = await supabase
+    .from("recipe_comments")
+    .select("*")
+    .eq("recipe_id", recipe.id)
+    .order("created_at", { ascending: true });
+  const comments = (commentData as RecipeComment[]) ?? [];
 
   return (
     <article className="page-narrow">
@@ -95,6 +103,13 @@ export default async function RecipeDetailPage({
           </ol>
         )}
       </section>
+
+      <RecipeComments
+        recipeId={recipe.id}
+        comments={comments}
+        currentUserId={user.id}
+        isOwner={recipe.user_id === user.id}
+      />
     </article>
   );
 }
