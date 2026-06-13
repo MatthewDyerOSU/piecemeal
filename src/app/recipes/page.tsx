@@ -145,19 +145,22 @@ export default async function RecipesPage({
                     ))}
                   </ul>
                 ) : null}
-                {shareSummary(recipe.id) ? (
-                  <p className="recipe-share">
-                    <span className="recipe-share-label">Shared with</span>{" "}
-                    {shareSummary(recipe.id)}
-                  </p>
-                ) : null}
-                <div className="recipe-card-actions">
-                  <Link
-                    className="button button-secondary"
-                    href={`/recipes/${recipe.id}/edit`}
-                  >
-                    Edit<span className="visually-hidden"> {recipe.name}</span>
-                  </Link>
+                <div className="recipe-card-footer">
+                  {shareSummary(recipe.id) ? (
+                    <p className="recipe-share">
+                      <span className="recipe-share-label">Shared with</span>{" "}
+                      {shareSummary(recipe.id)}
+                    </p>
+                  ) : null}
+                  <div className="recipe-card-actions">
+                    <Link
+                      className="button button-secondary"
+                      href={`/recipes/${recipe.id}/edit`}
+                    >
+                      Edit
+                      <span className="visually-hidden"> {recipe.name}</span>
+                    </Link>
+                  </div>
                 </div>
               </article>
             </li>
