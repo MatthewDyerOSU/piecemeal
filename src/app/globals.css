@@ -229,23 +229,6 @@ ol {
   gap: var(--space-2) var(--space-3);
 }
 
-/* Below the single-row breakpoint the header stacks, everything
-   left-aligned — never two rows with opposite alignment. */
-@media (max-width: 59.99rem) {
-  .site-header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .auth-area {
-    margin-left: 0;
-  }
-
-  .nav-list li:first-child a {
-    padding-left: 0;
-  }
-}
-
 .wordmark {
   font-size: 1.4rem;
   font-weight: 700;
@@ -310,9 +293,42 @@ ol {
   gap: var(--space-3);
 }
 
-.auth-area .user-name {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
+.auth-area .button {
+  white-space: nowrap;
+}
+
+/* Below the single-row breakpoint the header stacks, everything
+   left-aligned — never two rows with opposite alignment. (This block
+   must come after the .auth-area base rule: margin-left: auto would
+   otherwise win on source order and push the auth area right in the
+   column layout.) */
+@media (max-width: 59.99rem) {
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .auth-area {
+    margin-left: 0;
+  }
+
+  .nav-list li:first-child a {
+    padding-left: 0;
+  }
+}
+
+/* Very narrow viewports (including high zoom): the nav becomes a single
+   clean vertical list instead of scattered wrapped rows. */
+@media (max-width: 35.99rem) {
+  .nav-list {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .nav-list a {
+    padding-left: 0;
+  }
 }
 
 /* --- Layout --- */
@@ -871,6 +887,101 @@ legend {
   padding: var(--space-2) var(--space-3);
   display: inline-block;
   user-select: all;
+}
+
+/* --- Shopping list --- */
+
+.shopping-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+  max-width: var(--narrow-width);
+}
+
+.shopping-list > li {
+  max-width: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shopping-list > li:last-child {
+  border-bottom: 0;
+}
+
+.shopping-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  max-width: var(--narrow-width);
+  margin-bottom: var(--space-2);
+}
+
+.shopping-count {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+/* View mode: the whole row is one big checkbox target. */
+.shopping-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  width: 100%;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+}
+
+/* Edit mode: text keeps full width; the buttons wrap to their own line
+   on narrow screens instead of squeezing the text into a column. */
+.shopping-edit-row {
+  flex-wrap: wrap;
+  padding: var(--space-2) 0;
+}
+
+.shopping-edit-row .shopping-text {
+  flex: 1 1 14rem;
+}
+
+.shopping-check input {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.shopping-text {
+  overflow-wrap: anywhere;
+}
+
+.shopping-text.is-checked {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.shopping-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.export-section {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.add-to-shopping {
+  margin: var(--space-3) 0 var(--space-4);
+}
+
+.add-to-shopping-status {
+  margin: var(--space-2) 0 0;
+  min-height: 1.65em;
 }
 
 /* --- Cooking mode switch --- */

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
+import { allIngredients } from "@/lib/recipes";
 import CookingMode from "@/components/CookingMode";
+import AddToShoppingList from "@/components/AddToShoppingList";
 
 export default async function RecipeDetailPage({
   params,
@@ -50,6 +52,8 @@ export default async function RecipeDetailPage({
           ))}
         </ul>
       ) : null}
+
+      <AddToShoppingList items={allIngredients(recipe.ingredients)} />
 
       <section aria-labelledby="ingredients-heading">
         <h2 className="eyebrow" id="ingredients-heading">

@@ -26,17 +26,12 @@ export default async function NavBar() {
 
         <div className="auth-area">
           {user ? (
-            <>
-              <span className="user-name">
-                <span className="visually-hidden">Signed in as </span>
-                {displayName}
-              </span>
-              <form action="/auth/signout" method="post">
-                <button type="submit" className="button button-secondary">
-                  Sign out
-                </button>
-              </form>
-            </>
+            <form action="/auth/signout" method="post">
+              <button type="submit" className="button button-secondary">
+                Sign out
+                <span className="visually-hidden"> ({displayName})</span>
+              </button>
+            </form>
           ) : (
             <Link href="/login" className="button button-secondary">
               Sign in
