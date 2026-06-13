@@ -795,9 +795,12 @@ legend {
   font-size: 1.1rem;
 }
 
-.recipe-card-actions {
+.recipe-card-footer {
   margin-top: auto;
   padding-top: var(--space-3);
+}
+
+.recipe-card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
