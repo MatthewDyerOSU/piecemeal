@@ -8,6 +8,7 @@ const links = [
   { href: "/recipes", label: "Saved recipes" },
   { href: "/recipes/new", label: "Add a recipe" },
   { href: "/shopping-list", label: "Shopping list" },
+  { href: "/honey-dos", label: "Honey-dos" },
   { href: "/household", label: "Households" },
 ];
 

@@ -28,6 +28,10 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
   strikethrough) as you shop in the browser, and export to Apple Reminders
   (.ics, tappable checkboxes on iPhone) or a plain-text checklist (.txt,
   for Apple/Samsung Notes).
+- **Honey-dos** — a shared per-household checklist (chores, projects) with
+  freeform group labels per item (e.g. assignment by person). Clean
+  checklist by default; an "Edit honey-dos" toggle reveals per-item edit
+  and remove controls.
 - **Household sharing** — accounts share one recipe collection: create a
   household, share its invite code, and everyone in it sees, searches, and
   can edit each other's recipes with separate sign-ins. A user can belong

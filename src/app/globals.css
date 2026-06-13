@@ -225,8 +225,23 @@ ol {
   margin: 0 auto;
   padding: var(--space-2) var(--space-4);
   display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Top row: brand on the left, account controls on the right. */
+.header-bar {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2) var(--space-3);
+}
+
+/* The nav is its own full-width row beneath, wrapping cleanly and always
+   left-aligned, so it scales to any number of links. */
+.header-nav {
+  width: 100%;
 }
 
 .wordmark {
@@ -286,8 +301,11 @@ ol {
   color: var(--color-link);
 }
 
+.nav-list li:first-child a {
+  padding-left: 0;
+}
+
 .auth-area {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -295,26 +313,6 @@ ol {
 
 .auth-area .button {
   white-space: nowrap;
-}
-
-/* Below the single-row breakpoint the header stacks, everything
-   left-aligned — never two rows with opposite alignment. (This block
-   must come after the .auth-area base rule: margin-left: auto would
-   otherwise win on source order and push the auth area right in the
-   column layout.) */
-@media (max-width: 59.99rem) {
-  .site-header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .auth-area {
-    margin-left: 0;
-  }
-
-  .nav-list li:first-child a {
-    padding-left: 0;
-  }
 }
 
 /* Very narrow viewports (including high zoom): the nav becomes a single
@@ -1060,4 +1058,76 @@ legend {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* --- Honey-dos --- */
+
+.household-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  max-width: var(--narrow-width);
+}
+
+.household-switch label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+  width: 100%;
+}
+
+.household-switch select {
+  flex: 1;
+  min-width: 12rem;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius);
+}
+
+.honeydo-add {
+  max-width: var(--narrow-width);
+}
+
+.honeydo-add-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.honeydo-add-text {
+  flex: 2 1 14rem;
+}
+
+.honeydo-add-group {
+  flex: 1 1 10rem;
+}
+
+.honeydo-add-fields label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.honeydo-add-fields input {
+  width: 100%;
+}
+
+.honeydo-group-heading {
+  margin-bottom: var(--space-2);
+}
+
+.honeydo-edit-fields {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.honeydo-edit-fields input {
+  flex: 1 1 10rem;
 }
