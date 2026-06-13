@@ -50,7 +50,12 @@ export default async function RecipesPage({
           Filter
         </h2>
         <form method="get" action="/recipes" className="filter-form">
+          {/* Keyed on the active filters so the uncontrolled checkboxes
+              remount and re-apply their defaults after a client-side
+              navigation such as "Clear filters" (defaultChecked does not
+              update on re-render alone). */}
           <TagPills
+            key={filters.join(",")}
             name="filter"
             legend="Filter by tag"
             defaultSelected={filters}
