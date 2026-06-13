@@ -31,7 +31,9 @@ Built with Next.js (App Router) and [Supabase](https://supabase.com)
 - **Honey-dos** — a shared per-household checklist (chores, projects) with
   freeform group labels per item (e.g. assignment by person). Clean
   checklist by default; an "Edit honey-dos" toggle reveals per-item edit
-  and remove controls.
+  and remove controls. Items can repeat daily/weekly/monthly and
+  auto-uncheck at the start of each period (lazy reset on page load; no
+  background job).
 - **Household sharing** — accounts share one recipe collection: create a
   household, share its invite code, and everyone in it sees, searches, and
   can edit each other's recipes with separate sign-ins. A user can belong

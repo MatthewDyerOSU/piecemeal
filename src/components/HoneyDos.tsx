@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import type { HoneyDo } from "@/types/honeyDo";
+import type { HoneyDo, HoneyDoCadence } from "@/types/honeyDo";
+import { CADENCE_LABELS, HONEY_DO_CADENCES } from "@/lib/honeyDos";
 import {
   addHoneyDo,
   clearCheckedHoneyDos,
@@ -9,6 +10,18 @@ import {
   setHoneyDoChecked,
   updateHoneyDo,
 } from "@/app/honey-dos/actions";
+
+function RecurringBadge({ cadence }: { cadence: HoneyDoCadence }) {
+  if (cadence === "none") {
+    return null;
+  }
+  return (
+    <span className="recurring-badge">
+      <span className="visually-hidden">repeats </span>
+      {CADENCE_LABELS[cadence]}
+    </span>
+  );
+}
 
 export default function HoneyDos({
   householdId,
@@ -20,12 +33,14 @@ export default function HoneyDos({
   const [items, setItems] = useState(initialItems);
   const [draft, setDraft] = useState("");
   const [draftGroup, setDraftGroup] = useState("");
+  const [draftCadence, setDraftCadence] = useState<HoneyDoCadence>("none");
   // View mode is a clean checklist; edit mode reveals per-item controls
   // and hides the checkboxes.
   const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [editGroup, setEditGroup] = useState("");
+  const [editCadence, setEditCadence] = useState<HoneyDoCadence>("none");
   const [announcement, setAnnouncement] = useState("");
   const [, startTransition] = useTransition();
 
@@ -37,9 +52,6 @@ export default function HoneyDos({
     }
   }, [editingId]);
 
-  // Group the items: named groups alphabetically, then any ungrouped
-  // items under "Other". Headings only appear once at least one group is
-  // named, so a plain list (no groups) stays flat.
   const { groups, showHeadings, groupNames } = useMemo(() => {
     const map = new Map<string, HoneyDo[]>();
     for (const item of items) {
@@ -73,25 +85,32 @@ export default function HoneyDos({
       return;
     }
     const group = draftGroup.trim();
+    const cadence = draftCadence;
     const temp: HoneyDo = {
       id: `temp-${Date.now()}`,
       household_id: householdId,
       group_name: group,
       text,
       checked: false,
+      cadence,
+      checked_at: null,
       created_at: new Date().toISOString(),
     };
     setItems((previous) => [...previous, temp]);
     setDraft("");
     setAnnouncement(`Added ${text}${group ? ` to ${group}` : ""}.`);
     addInputRef.current?.focus();
-    startTransition(() => addHoneyDo(householdId, text, group));
+    startTransition(() => addHoneyDo(householdId, text, group, cadence));
   }
 
   function toggle(item: HoneyDo) {
     const checked = !item.checked;
     setItems((previous) =>
-      previous.map((i) => (i.id === item.id ? { ...i, checked } : i))
+      previous.map((i) =>
+        i.id === item.id
+          ? { ...i, checked, checked_at: checked ? new Date().toISOString() : null }
+          : i
+      )
     );
     startTransition(() => setHoneyDoChecked(item.id, checked));
   }
@@ -106,6 +125,7 @@ export default function HoneyDos({
     setEditingId(item.id);
     setEditText(item.text);
     setEditGroup(item.group_name);
+    setEditCadence(item.cadence);
   }
 
   function saveEdit(item: HoneyDo) {
@@ -114,14 +134,17 @@ export default function HoneyDos({
       return;
     }
     const group = editGroup.trim();
+    const cadence = editCadence;
     setItems((previous) =>
       previous.map((i) =>
-        i.id === item.id ? { ...i, text, group_name: group } : i
+        i.id === item.id
+          ? { ...i, text, group_name: group, cadence }
+          : i
       )
     );
     setEditingId(null);
     setAnnouncement(`Updated ${text}.`);
-    startTransition(() => updateHoneyDo(item.id, text, group));
+    startTransition(() => updateHoneyDo(item.id, text, group, cadence));
   }
 
   function clearChecked() {
@@ -131,6 +154,28 @@ export default function HoneyDos({
   }
 
   const checkedCount = items.filter((i) => i.checked).length;
+
+  function cadenceSelect(
+    id: string,
+    value: HoneyDoCadence,
+    onChange: (next: HoneyDoCadence) => void,
+    label: string
+  ) {
+    return (
+      <select
+        id={id}
+        aria-label={label}
+        value={value}
+        onChange={(event) => onChange(event.target.value as HoneyDoCadence)}
+      >
+        {HONEY_DO_CADENCES.map((cadence) => (
+          <option key={cadence} value={cadence}>
+            {CADENCE_LABELS[cadence]}
+          </option>
+        ))}
+      </select>
+    );
+  }
 
   function renderItem(item: HoneyDo) {
     if (editingId === item.id) {
@@ -162,6 +207,12 @@ export default function HoneyDos({
             placeholder="Group (optional)"
             autoComplete="off"
           />
+          {cadenceSelect(
+            `cadence-${item.id}`,
+            editCadence,
+            setEditCadence,
+            `How often ${item.text} repeats`
+          )}
           <span className="item-actions">
             <button
               type="button"
@@ -185,12 +236,15 @@ export default function HoneyDos({
     if (editMode) {
       return (
         <span className="item-row shopping-edit-row">
-          <span
-            className={
-              item.checked ? "shopping-text is-checked" : "shopping-text"
-            }
-          >
-            {item.text}
+          <span className="shopping-text-wrap">
+            <span
+              className={
+                item.checked ? "shopping-text is-checked" : "shopping-text"
+              }
+            >
+              {item.text}
+            </span>
+            <RecurringBadge cadence={item.cadence} />
           </span>
           <span className="item-actions">
             <button
@@ -219,12 +273,15 @@ export default function HoneyDos({
           checked={item.checked}
           onChange={() => toggle(item)}
         />
-        <span
-          className={
-            item.checked ? "shopping-text is-checked" : "shopping-text"
-          }
-        >
-          {item.text}
+        <span className="shopping-text-wrap">
+          <span
+            className={
+              item.checked ? "shopping-text is-checked" : "shopping-text"
+            }
+          >
+            {item.text}
+          </span>
+          <RecurringBadge cadence={item.cadence} />
         </span>
       </label>
     );
@@ -262,6 +319,15 @@ export default function HoneyDos({
               placeholder="e.g. a name or project"
               autoComplete="off"
             />
+          </div>
+          <div className="honeydo-add-cadence">
+            <label htmlFor="honeydo-add-cadence-input">Repeats</label>
+            {cadenceSelect(
+              "honeydo-add-cadence-input",
+              draftCadence,
+              setDraftCadence,
+              "How often this item repeats"
+            )}
           </div>
         </div>
         <button
@@ -321,7 +387,9 @@ export default function HoneyDos({
                 </h2>
               ) : null}
               <ul
-                className={editMode ? "shopping-list is-editing" : "shopping-list"}
+                className={
+                  editMode ? "shopping-list is-editing" : "shopping-list"
+                }
               >
                 {group.items.map((item) => (
                   <li key={item.id}>{renderItem(item)}</li>

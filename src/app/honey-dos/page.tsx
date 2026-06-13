@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Household } from "@/types/household";
 import type { HoneyDo } from "@/types/honeyDo";
+import { isDueForReset } from "@/lib/honeyDos";
 import HoneyDos from "@/components/HoneyDos";
 
 export const metadata: Metadata = {
@@ -58,7 +59,26 @@ export default async function HoneyDosPage({
     .eq("household_id", active.id)
     .order("created_at", { ascending: true });
 
-  const items = (data as HoneyDo[]) ?? [];
+  let items = (data as HoneyDo[]) ?? [];
+
+  // Lazy recurrence reset: recurring items checked in an earlier period
+  // flip back to unchecked now (and the change is persisted for everyone).
+  const due = items.filter((item) => isDueForReset(item));
+  if (due.length > 0) {
+    await supabase
+      .from("honey_dos")
+      .update({ checked: false, checked_at: null })
+      .in(
+        "id",
+        due.map((item) => item.id)
+      );
+    const dueIds = new Set(due.map((item) => item.id));
+    items = items.map((item) =>
+      dueIds.has(item.id)
+        ? { ...item, checked: false, checked_at: null }
+        : item
+    );
+  }
 
   return (
     <section className="page-narrow">

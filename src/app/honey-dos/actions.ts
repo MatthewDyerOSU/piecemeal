@@ -3,6 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { HONEY_DO_CADENCES } from "@/lib/honeyDos";
+
+function normalizeCadence(value: string): string {
+  return (HONEY_DO_CADENCES as string[]).includes(value) ? value : "none";
+}
 
 async function requireClient() {
   const supabase = await createClient();
@@ -21,7 +26,8 @@ async function requireClient() {
 export async function addHoneyDo(
   householdId: string,
   text: string,
-  groupName: string
+  groupName: string,
+  cadence: string
 ) {
   const trimmed = text.trim();
   if (!trimmed || !householdId) {
@@ -32,20 +38,27 @@ export async function addHoneyDo(
     household_id: householdId,
     text: trimmed,
     group_name: groupName.trim(),
+    cadence: normalizeCadence(cadence),
   });
   revalidatePath("/honey-dos");
 }
 
 export async function setHoneyDoChecked(id: string, checked: boolean) {
   const { supabase } = await requireClient();
-  await supabase.from("honey_dos").update({ checked }).eq("id", id);
+  // Record when it was checked so the recurrence reset knows whether it
+  // happened in the current period.
+  await supabase
+    .from("honey_dos")
+    .update({ checked, checked_at: checked ? new Date().toISOString() : null })
+    .eq("id", id);
   revalidatePath("/honey-dos");
 }
 
 export async function updateHoneyDo(
   id: string,
   text: string,
-  groupName: string
+  groupName: string,
+  cadence: string
 ) {
   const trimmed = text.trim();
   if (!trimmed) {
@@ -54,7 +67,11 @@ export async function updateHoneyDo(
   const { supabase } = await requireClient();
   await supabase
     .from("honey_dos")
-    .update({ text: trimmed, group_name: groupName.trim() })
+    .update({
+      text: trimmed,
+      group_name: groupName.trim(),
+      cadence: normalizeCadence(cadence),
+    })
     .eq("id", id);
   revalidatePath("/honey-dos");
 }
