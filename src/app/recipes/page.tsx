@@ -33,14 +33,13 @@ export default async function RecipesPage({
     redirect("/login");
   }
 
-  const { data, error } = await supabase
-    .from("recipes")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.from("recipes").select("*");
 
-  const recipes = ((data as Recipe[]) ?? []).filter((recipe) =>
-    matchesTagFilters(recipe.tags ?? [], filters)
-  );
+  const recipes = ((data as Recipe[]) ?? [])
+    .filter((recipe) => matchesTagFilters(recipe.tags ?? [], filters))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+    );
 
   return (
     <>

@@ -17,13 +17,20 @@ export default function TagPills({
   legend,
   describedBy,
   defaultSelected = [],
+  selected,
+  onToggle,
 }: {
   /** Form field name, e.g. "tags" or "filter". */
   name: string;
   /** Visually hidden group label. */
   legend: string;
   describedBy?: string;
+  /** Uncontrolled initial state (GET filter forms). */
   defaultSelected?: string[];
+  /** Controlled state: required in forms driven by server actions, which
+      React resets after each submission. Pass both selected and onToggle. */
+  selected?: string[];
+  onToggle?: (tag: string) => void;
 }) {
   return (
     <fieldset className="pill-fieldset">
@@ -36,7 +43,13 @@ export default function TagPills({
               className="visually-hidden"
               name={name}
               value={tag}
-              defaultChecked={defaultSelected.includes(tag)}
+              checked={selected ? selected.includes(tag) : undefined}
+              onChange={
+                selected && onToggle ? () => onToggle(tag) : undefined
+              }
+              defaultChecked={
+                selected ? undefined : defaultSelected.includes(tag)
+              }
             />
             <span className="pill-label">{TAG_LABELS[tag]}</span>
           </label>
