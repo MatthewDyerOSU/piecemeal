@@ -85,8 +85,9 @@ export default async function RecipesPage({
     }
   }
 
+  const currentUserId = user.id;
   function ownerLabel(recipe: Recipe): string {
-    return recipe.user_id === user.id
+    return recipe.user_id === currentUserId
       ? "You"
       : nameByUser.get(recipe.user_id) ?? "A household member";
   }
