@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import NavLinks from "./NavLinks";
+import SiteNav from "./SiteNav";
 import LogoMark from "./LogoMark";
 
 export default async function NavBar() {
@@ -37,9 +37,9 @@ export default async function NavBar() {
           </div>
         </div>
 
-        <nav className="header-nav" aria-label="Main">
-          <NavLinks />
-        </nav>
+        <div className="header-nav">
+          <SiteNav />
+        </div>
       </div>
     </header>
   );
