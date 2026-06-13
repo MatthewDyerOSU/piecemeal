@@ -30,6 +30,9 @@ export default function ShoppingList({
 }) {
   const [items, setItems] = useState(initialItems);
   const [draft, setDraft] = useState("");
+  // View mode is a clean checklist for the store; edit mode reveals the
+  // per-item Edit/Remove controls.
+  const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const [announcement, setAnnouncement] = useState("");
@@ -138,7 +141,29 @@ export default function ShoppingList({
         </p>
       ) : (
         <>
-          <ul className="shopping-list">
+          <div className="shopping-toolbar">
+            <p className="muted shopping-count">
+              {checkedCount} of {items.length} checked
+            </p>
+            <button
+              type="button"
+              className="button button-secondary button-compact"
+              aria-pressed={editMode}
+              onClick={() => {
+                const next = !editMode;
+                setEditMode(next);
+                setEditingId(null);
+                setAnnouncement(
+                  next
+                    ? "Editing the list. Each item now has edit and remove buttons."
+                    : "Finished editing the list."
+                );
+              }}
+            >
+              {editMode ? "Done editing" : "Edit list"}
+            </button>
+          </div>
+          <ul className={editMode ? "shopping-list is-editing" : "shopping-list"}>
             {items.map((item) => (
               <li key={item.id}>
                 {editingId === item.id ? (
@@ -177,22 +202,15 @@ export default function ShoppingList({
                       </button>
                     </span>
                   </span>
-                ) : (
-                  <span className="item-row">
-                    <label className="shopping-check">
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggle(item)}
-                      />
-                      <span
-                        className={
-                          item.checked ? "shopping-text is-checked" : "shopping-text"
-                        }
-                      >
-                        {item.text}
-                      </span>
-                    </label>
+                ) : editMode ? (
+                  <span className="item-row shopping-edit-row">
+                    <span
+                      className={
+                        item.checked ? "shopping-text is-checked" : "shopping-text"
+                      }
+                    >
+                      {item.text}
+                    </span>
                     <span className="item-actions">
                       <button
                         type="button"
@@ -213,6 +231,21 @@ export default function ShoppingList({
                       </button>
                     </span>
                   </span>
+                ) : (
+                  <label className="shopping-check">
+                    <input
+                      type="checkbox"
+                      checked={item.checked}
+                      onChange={() => toggle(item)}
+                    />
+                    <span
+                      className={
+                        item.checked ? "shopping-text is-checked" : "shopping-text"
+                      }
+                    >
+                      {item.text}
+                    </span>
+                  </label>
                 )}
               </li>
             ))}

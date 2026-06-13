@@ -907,18 +907,48 @@ legend {
   border-bottom: 0;
 }
 
-.shopping-check {
-  display: inline-flex;
+.shopping-toolbar {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  max-width: var(--narrow-width);
+  margin-bottom: var(--space-2);
+}
+
+.shopping-count {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+/* View mode: the whole row is one big checkbox target. */
+.shopping-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
   min-height: var(--target-min);
-  flex: 1;
+  width: 100%;
+  padding: var(--space-2) 0;
   cursor: pointer;
 }
 
+/* Edit mode: text keeps full width; the buttons wrap to their own line
+   on narrow screens instead of squeezing the text into a column. */
+.shopping-edit-row {
+  flex-wrap: wrap;
+  padding: var(--space-2) 0;
+}
+
+.shopping-edit-row .shopping-text {
+  flex: 1 1 14rem;
+}
+
 .shopping-check input {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
   accent-color: var(--color-accent);
   flex-shrink: 0;
 }
