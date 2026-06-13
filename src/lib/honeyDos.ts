@@ -55,8 +55,10 @@ export function isDueForReset(item: HoneyDo, now: Date = new Date()): boolean {
   if (!start) {
     return false;
   }
+  // No timestamp on a checked item is anomalous; leave it checked rather
+  // than aggressively unchecking it.
   if (!item.checked_at) {
-    return true;
+    return false;
   }
   return new Date(item.checked_at) < start;
 }
