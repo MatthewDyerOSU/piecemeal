@@ -154,7 +154,9 @@ export default function SiteNav({ account }: { account: React.ReactNode }) {
                 <nav aria-label="Main">
                   <NavLinks onNavigate={close} />
                 </nav>
-                <div className="nav-dialog-account">{account}</div>
+                {account ? (
+                  <div className="nav-dialog-account">{account}</div>
+                ) : null}
               </div>
             </div>,
             document.body

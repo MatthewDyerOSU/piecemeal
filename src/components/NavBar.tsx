@@ -12,9 +12,10 @@ export default async function NavBar() {
   const displayName =
     (user?.user_metadata?.full_name as string | undefined) ?? user?.email;
 
-  // The same account control renders in the top bar (wide screens) and
-  // inside the menu dialog (compact screens); only one is visible at a
-  // time via CSS.
+  // Signed-in users get Sign out (top bar on wide screens, in the menu on
+  // compact ones). Signed-out users get no header account control — Sign
+  // in lives on the landing page, since a header button that only ever
+  // routed to /login confused first-time visitors.
   const account = user ? (
     <form action="/auth/signout" method="post">
       <button type="submit" className="button button-secondary">
@@ -22,11 +23,7 @@ export default async function NavBar() {
         <span className="visually-hidden"> ({displayName})</span>
       </button>
     </form>
-  ) : (
-    <Link href="/login" className="button button-secondary">
-      Sign in
-    </Link>
-  );
+  ) : null;
 
   return (
     <header className="site-header">
@@ -37,7 +34,9 @@ export default async function NavBar() {
             piece-meal<span className="visually-hidden"> home</span>
           </Link>
 
-          <div className="auth-area auth-area-bar">{account}</div>
+          {account ? (
+            <div className="auth-area auth-area-bar">{account}</div>
+          ) : null}
         </div>
 
         <div className="header-nav">
