@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import {
   pickRandomRecipe,
@@ -22,10 +22,24 @@ export default function RandomPicker() {
     pickRandomRecipe,
     initialState
   );
+  // Controlled: React resets uncontrolled fields after each server-action
+  // submission, which would untoggle the pills on every pick.
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   return (
     <form action={formAction}>
-      <TagPills name="filter" legend="Only pick from recipes tagged" />
+      <TagPills
+        name="filter"
+        legend="Only pick from recipes tagged"
+        selected={selectedTags}
+        onToggle={(tag) =>
+          setSelectedTags((previous) =>
+            previous.includes(tag)
+              ? previous.filter((t) => t !== tag)
+              : [...previous, tag]
+          )
+        }
+      />
       <p>
         <button type="submit" className="button" disabled={pending}>
           {pending

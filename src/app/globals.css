@@ -349,24 +349,6 @@ main:focus {
   margin-bottom: var(--space-4);
 }
 
-.chip-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  list-style: none;
-  margin: 0 0 var(--space-4);
-  padding: 0;
-}
-
-.chip {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-chip);
-  padding: var(--space-1) var(--space-2);
-}
-
 .site-footer {
   border-top: 1px solid var(--color-border);
 }
@@ -758,22 +740,27 @@ legend {
   border: 2px solid var(--pill-bg);
   padding: 0 var(--space-4);
   margin-bottom: 0;
+  background: transparent;
   color: var(--pill-bg);
+  font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
-.pill-checkbox:has(input:checked) {
+.pill-checkbox:has(input:checked),
+.pill-checkbox[aria-checked="true"] {
   background: var(--pill-bg);
   color: var(--pill-fg);
 }
 
 /* State is also marked with a check, not color alone. */
-.pill-checkbox:has(input:checked) .pill-label::before {
+.pill-checkbox:has(input:checked) .pill-label::before,
+.pill-checkbox[aria-checked="true"] .pill-label::before {
   content: "\2713 ";
 }
 
-.pill-checkbox:has(input:focus-visible) {
+.pill-checkbox:has(input:focus-visible),
+.pill-checkbox:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
