@@ -10,6 +10,8 @@ import type { Recipe } from "@/types/recipe";
 import ItemListEditor from "@/components/ItemListEditor";
 import IngredientGroupsEditor from "@/components/IngredientGroupsEditor";
 import TagPills from "@/components/TagPills";
+import DeleteRecipeButton from "@/components/DeleteRecipeButton";
+import { deleteRecipe } from "@/app/recipes/actions";
 
 const initialState: RecipeFormState = { errors: {} };
 
@@ -67,6 +69,7 @@ export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
   }, [state]);
 
   return (
+    <>
     <form action={formAction} noValidate>
       <p className="field-help">
         Required fields are marked with an asterisk (*).
@@ -176,5 +179,25 @@ export default function RecipeForm({ recipe }: { recipe?: Recipe }) {
         {pending ? "Saving…" : recipe ? "Save changes" : "Save recipe"}
       </button>
     </form>
+
+    {recipe ? (
+      <section
+        aria-labelledby="delete-recipe-heading"
+        className="delete-recipe"
+      >
+        <h2 className="eyebrow" id="delete-recipe-heading">
+          Delete this recipe
+        </h2>
+        <p className="field-help">
+          This removes the recipe for everyone in your household. It cannot
+          be undone.
+        </p>
+        <form action={deleteRecipe}>
+          <input type="hidden" name="id" value={recipe.id} />
+          <DeleteRecipeButton name={recipe.name} />
+        </form>
+      </section>
+    ) : null}
+    </>
   );
 }

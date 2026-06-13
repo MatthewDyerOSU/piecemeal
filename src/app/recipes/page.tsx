@@ -4,9 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
 import { matchesTagFilters, sanitizeTagFilters } from "@/lib/recipes";
-import DeleteRecipeButton from "@/components/DeleteRecipeButton";
 import TagPills from "@/components/TagPills";
-import { deleteRecipe } from "./actions";
 
 export const metadata: Metadata = {
   title: "Saved recipes",
@@ -110,10 +108,6 @@ export default async function RecipesPage({
                   >
                     Edit<span className="visually-hidden"> {recipe.name}</span>
                   </Link>
-                  <form action={deleteRecipe}>
-                    <input type="hidden" name="id" value={recipe.id} />
-                    <DeleteRecipeButton name={recipe.name} />
-                  </form>
                 </div>
               </article>
             </li>

@@ -12,21 +12,32 @@ const links = [
   { href: "/household", label: "Households" },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({
+  onNavigate,
+}: {
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (
     <ul className="nav-list">
-      {links.map((link) => (
-        <li key={link.href}>
-          <Link
-            href={link.href}
-            aria-current={pathname === link.href ? "page" : undefined}
-          >
-            {link.label}
-          </Link>
-        </li>
-      ))}
+      {links.map((link) => {
+        const current = pathname === link.href;
+        return (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              aria-current={current ? "page" : undefined}
+              onClick={onNavigate}
+            >
+              {current ? (
+                <span className="nav-current-marker" aria-hidden="true" />
+              ) : null}
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }

@@ -187,6 +187,7 @@ export async function deleteRecipe(formData: FormData) {
   }
 
   revalidatePath("/recipes");
+  redirect("/recipes");
 }
 
 export type RandomPickState =
