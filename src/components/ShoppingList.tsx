@@ -9,38 +9,6 @@ import {
   setShoppingItemChecked,
   updateShoppingItem,
 } from "@/app/shopping-list/actions";
-import {
-  buildChecklistHtml,
-  buildChecklistText,
-  buildRemindersIcs,
-} from "@/lib/shoppingExport";
-
-function download(filename: string, content: string, mime: string) {
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
-/**
- * Open a clean printable list in a new window and trigger the print dialog,
- * where "Save as PDF" yields a PDF that Samsung Notes can import. Falls back
- * to a text download if the window is blocked (e.g. a strict popup blocker).
- */
-function printChecklist(items: ShoppingListItem[]) {
-  const win = window.open("", "_blank");
-  if (!win) {
-    download("shopping-list.txt", buildChecklistText(items), "text/plain");
-    return;
-  }
-  win.document.write(buildChecklistHtml(items));
-  win.document.close();
-}
 
 export default function ShoppingList({
   initialItems,
@@ -281,58 +249,6 @@ export default function ShoppingList({
               </button>
             ) : null}
           </div>
-
-          <section aria-labelledby="export-heading" className="export-section">
-            <h2 className="eyebrow" id="export-heading">
-              Export
-            </h2>
-            <p className="field-help">
-              Take the list to the store. Check items off in the browser
-              above, or use your phone&apos;s own app:
-            </p>
-            <div className="shopping-actions">
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() =>
-                  download(
-                    "shopping-list.ics",
-                    buildRemindersIcs(items),
-                    "text/calendar"
-                  )
-                }
-              >
-                Apple Reminders (.ics)
-              </button>
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => printChecklist(items)}
-              >
-                Save as PDF (Samsung Notes)
-              </button>
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() =>
-                  download(
-                    "shopping-list.txt",
-                    buildChecklistText(items),
-                    "text/plain"
-                  )
-                }
-              >
-                Checklist text (.txt)
-              </button>
-            </div>
-            <p className="field-help">
-              The .ics opens in Reminders on iPhone as tappable checkboxes.
-              Save as PDF opens a print dialog — choose “Save as PDF”, then
-              import it into Samsung Notes (Samsung’s own .snb/.spd note
-              formats are proprietary, so a PDF is the reliable way in). The
-              .txt opens as an editable note in Samsung Notes or Apple Notes.
-            </p>
-          </section>
         </>
       )}
     </>
