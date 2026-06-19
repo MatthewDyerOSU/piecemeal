@@ -853,6 +853,10 @@ legend {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  /* Pin to the bottom of the (equal-height) card so the Edit button lines
+     up across the row no matter how much content sits above it — short
+     title, no pills, or no servings/time line. */
+  margin-top: auto;
 }
 
 /* --- Tag pills (static on cards, checkbox pills in filters/forms) --- */
