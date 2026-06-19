@@ -9,19 +9,6 @@ import {
   setShoppingItemChecked,
   updateShoppingItem,
 } from "@/app/shopping-list/actions";
-import { buildChecklistText, buildRemindersIcs } from "@/lib/shoppingExport";
-
-function download(filename: string, content: string, mime: string) {
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
 
 export default function ShoppingList({
   initialItems,
@@ -262,49 +249,6 @@ export default function ShoppingList({
               </button>
             ) : null}
           </div>
-
-          <section aria-labelledby="export-heading" className="export-section">
-            <h2 className="eyebrow" id="export-heading">
-              Export
-            </h2>
-            <p className="field-help">
-              Take the list to the store. Check items off in the browser
-              above, or use your phone&apos;s own app:
-            </p>
-            <div className="shopping-actions">
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() =>
-                  download(
-                    "shopping-list.ics",
-                    buildRemindersIcs(items),
-                    "text/calendar"
-                  )
-                }
-              >
-                Apple Reminders (.ics)
-              </button>
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() =>
-                  download(
-                    "shopping-list.txt",
-                    buildChecklistText(items),
-                    "text/plain"
-                  )
-                }
-              >
-                Checklist text (.txt)
-              </button>
-            </div>
-            <p className="field-help">
-              The .ics opens in Reminders on iPhone as tappable checkboxes.
-              The .txt opens in Apple Notes or Samsung Notes; both can turn
-              it into a checklist.
-            </p>
-          </section>
         </>
       )}
     </>
