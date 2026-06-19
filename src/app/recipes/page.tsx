@@ -3,7 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/types/recipe";
-import { matchesTagFilters, sanitizeTagFilters } from "@/lib/recipes";
+import {
+  formatMinutes,
+  matchesTagFilters,
+  sanitizeTagFilters,
+} from "@/lib/recipes";
 import TagPills from "@/components/TagPills";
 
 export const metadata: Metadata = {
@@ -39,36 +43,6 @@ export default async function RecipesPage({
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
     );
 
-  // Household shares for the visible recipes. `households(name)` is null
-  // for households the viewer isn't in (RLS hides the name), so each
-  // recipe gets the names it can show plus a count of any it can't.
-  const shareByRecipe = new Map<
-    string,
-    { names: string[]; total: number }
-  >();
-  if (recipes.length > 0) {
-    const { data: shareData } = await supabase
-      .from("recipe_households")
-      .select("recipe_id, households(name)")
-      .in(
-        "recipe_id",
-        recipes.map((r) => r.id)
-      );
-    for (const row of (shareData as
-      | { recipe_id: string; households: { name: string } | null }[]
-      | null) ?? []) {
-      const entry = shareByRecipe.get(row.recipe_id) ?? {
-        names: [],
-        total: 0,
-      };
-      entry.total += 1;
-      if (row.households?.name) {
-        entry.names.push(row.households.name);
-      }
-      shareByRecipe.set(row.recipe_id, entry);
-    }
-  }
-
   // Owner display names come from household membership (the only place
   // names are visible to the viewer); your own recipes show "You".
   const nameByUser = new Map<string, string>();
@@ -92,18 +66,12 @@ export default async function RecipesPage({
       : nameByUser.get(recipe.user_id) ?? "A household member";
   }
 
-  function shareSummary(recipeId: string): string | null {
-    const entry = shareByRecipe.get(recipeId);
-    if (!entry || entry.total === 0) {
-      return null;
-    }
-    const shown = entry.names.slice(0, 2);
-    const remaining = entry.total - shown.length;
-    const parts = [...shown];
-    if (remaining > 0) {
-      parts.push(`+${remaining}`);
-    }
-    return parts.join(", ");
+  function recipeFacts(recipe: Recipe): string | null {
+    const parts = [
+      recipe.servings ? `Serves ${recipe.servings}` : null,
+      formatMinutes(recipe.total_minutes),
+    ].filter((part): part is string => Boolean(part));
+    return parts.length > 0 ? parts.join(" · ") : null;
   }
 
   return (
@@ -170,16 +138,13 @@ export default async function RecipesPage({
                     </ul>
                   ) : null}
                 </div>
+                {recipeFacts(recipe) ? (
+                  <p className="recipe-facts">{recipeFacts(recipe)}</p>
+                ) : null}
                 <p className="recipe-meta-line">
                   <span className="recipe-meta-key">By</span>{" "}
                   {ownerLabel(recipe)}
                 </p>
-                {shareSummary(recipe.id) ? (
-                  <p className="recipe-meta-line">
-                    <span className="recipe-meta-key">Shared with</span>{" "}
-                    {shareSummary(recipe.id)}
-                  </p>
-                ) : null}
                 <div className="recipe-card-actions">
                   <Link
                     className="button button-secondary"

@@ -55,6 +55,13 @@ export default function RecipeForm({
   const [selectedTags, setSelectedTags] = useState<string[]>(
     recipe?.tags ?? []
   );
+  // Controlled so they survive the form reset after a failed submission.
+  const [servingsValue, setServingsValue] = useState(
+    recipe?.servings != null ? String(recipe.servings) : ""
+  );
+  const [timeValue, setTimeValue] = useState(
+    recipe?.total_minutes != null ? String(recipe.total_minutes) : ""
+  );
 
   const nameInvalid = Boolean(errors.name) && nameValue.trim() === "";
   const ingredientsInvalid = Boolean(errors.ingredients) && !hasIngredients;
@@ -124,6 +131,48 @@ export default function RecipeForm({
             {errors.name}
           </p>
         ) : null}
+      </div>
+
+      <div className="field-row">
+        <div className="field">
+          <label htmlFor="recipe-servings">Serves</label>
+          <p className="field-help" id="recipe-servings-help">
+            Optional. How many people it feeds.
+          </p>
+          <input
+            type="number"
+            id="recipe-servings"
+            name="servings"
+            min={1}
+            step={1}
+            inputMode="numeric"
+            className="input-narrow"
+            autoComplete="off"
+            value={servingsValue}
+            onChange={(event) => setServingsValue(event.target.value)}
+            aria-describedby="recipe-servings-help"
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="recipe-time">Total time (minutes)</label>
+          <p className="field-help" id="recipe-time-help">
+            Optional. Estimated time to make, in minutes.
+          </p>
+          <input
+            type="number"
+            id="recipe-time"
+            name="total-minutes"
+            min={1}
+            step={1}
+            inputMode="numeric"
+            className="input-narrow"
+            autoComplete="off"
+            value={timeValue}
+            onChange={(event) => setTimeValue(event.target.value)}
+            aria-describedby="recipe-time-help"
+          />
+        </div>
       </div>
 
       <IngredientGroupsEditor
