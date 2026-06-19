@@ -824,25 +824,22 @@ legend {
   margin: 0;
 }
 
+/* Reserve the pill row's height even with no tags, so the rows below keep
+   the same uniform gap and never shift up. min-height matches a pill so a
+   populated row is the same height as an empty one. */
 .recipe-card-tags {
   margin: 0;
-}
-
-/* Footer pinned to the bottom of the equal-height card, so the facts, By
-   line, and Edit button share a baseline across every card in a row. */
-.recipe-card-footer {
-  margin-top: auto;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  align-items: center;
+  min-height: 1.55rem;
 }
 
-/* Servings / total time, shown under the pills when set. The row is always
-   reserved (min-height) so the By line below it never shifts up on cards
-   without this data. */
+/* Servings / total time, shown under the pills when set. The row always
+   reserves exactly one line (min-height == one line at this font size) so
+   the By line below keeps the same gap whether or not the data is present. */
 .recipe-facts {
   margin: 0;
-  min-height: 1.2em;
+  min-height: 1.65em;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
@@ -852,6 +849,7 @@ legend {
 /* Same facts on the recipe page itself: a touch larger, with breathing room. */
 .recipe-facts-detail {
   font-size: 0.95rem;
+  min-height: 0;
   margin: var(--space-2) 0 var(--space-4);
   color: var(--color-text-muted);
 }
