@@ -8,6 +8,7 @@ import {
   matchesTagFilters,
   parseIngredients,
   parsePositiveInt,
+  parseServings,
   RECIPE_TAGS,
   sanitizeTagFilters,
 } from "@/lib/recipes";
@@ -114,9 +115,9 @@ function parseRecipeForm(formData: FormData) {
 
   const ingredients = parseIngredientGroups(formData);
 
-  // Optional facts: people fed and total time (whole minutes). Blank or
-  // non-positive values are stored as null ("not set").
-  const servings = parsePositiveInt(formData.get("servings"));
+  // Optional facts: people fed (free text, allows ranges like "2-4") and
+  // total time (whole minutes). Blank values are stored as null.
+  const servings = parseServings(formData.get("servings"));
   const totalMinutes = parsePositiveInt(formData.get("total-minutes"));
 
   // Committed steps, plus whatever is still typed in the entry box so it

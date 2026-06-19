@@ -11,8 +11,8 @@ export type Recipe = {
   ingredients: IngredientGroup[];
   instructions: string[];
   tags: string[];
-  /** How many people the recipe feeds; null when not set. */
-  servings: number | null;
+  /** How many the recipe feeds — a number or range like "2-4"; null when not set. */
+  servings: string | null;
   /** Estimated total time to make, in whole minutes; null when not set. */
   total_minutes: number | null;
   created_at: string;
