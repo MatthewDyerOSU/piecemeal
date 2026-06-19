@@ -25,6 +25,29 @@ export function matchesTagFilters(
   );
 }
 
+/** Parse a positive whole number from form input; null when blank/invalid. */
+export function parsePositiveInt(value: FormDataEntryValue | null): number | null {
+  const parsed = Number.parseInt(String(value ?? "").trim(), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+/** Format a duration in minutes as "45 min", "1 hr", or "1 hr 30 min". */
+export function formatMinutes(total: number | null | undefined): string | null {
+  if (!total || total <= 0) {
+    return null;
+  }
+  const hours = Math.floor(total / 60);
+  const minutes = total % 60;
+  const parts: string[] = [];
+  if (hours > 0) {
+    parts.push(`${hours} hr`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes} min`);
+  }
+  return parts.join(" ");
+}
+
 /** Splits a comma-separated ingredient string into trimmed, non-empty terms. */
 export function parseIngredients(input: string): string[] {
   return input

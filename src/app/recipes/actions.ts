@@ -7,6 +7,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   matchesTagFilters,
   parseIngredients,
+  parsePositiveInt,
   RECIPE_TAGS,
   sanitizeTagFilters,
 } from "@/lib/recipes";
@@ -113,6 +114,11 @@ function parseRecipeForm(formData: FormData) {
 
   const ingredients = parseIngredientGroups(formData);
 
+  // Optional facts: people fed and total time (whole minutes). Blank or
+  // non-positive values are stored as null ("not set").
+  const servings = parsePositiveInt(formData.get("servings"));
+  const totalMinutes = parsePositiveInt(formData.get("total-minutes"));
+
   // Committed steps, plus whatever is still typed in the entry box so it
   // is not lost on save.
   const steps = listValues(formData, "steps");
@@ -129,7 +135,7 @@ function parseRecipeForm(formData: FormData) {
     errors.ingredients = "Add at least one ingredient.";
   }
 
-  return { name, tags, ingredients, steps, errors };
+  return { name, tags, ingredients, servings, totalMinutes, steps, errors };
 }
 
 export async function createRecipe(
@@ -145,7 +151,7 @@ export async function createRecipe(
     redirect("/login");
   }
 
-  const { name, tags, ingredients, steps, errors } =
+  const { name, tags, ingredients, servings, totalMinutes, steps, errors } =
     parseRecipeForm(formData);
   if (Object.keys(errors).length > 0) {
     return { errors };
@@ -159,6 +165,8 @@ export async function createRecipe(
       ingredients,
       instructions: steps,
       tags,
+      servings,
+      total_minutes: totalMinutes,
     })
     .select("id")
     .single();
@@ -214,7 +222,7 @@ export async function updateRecipe(
     };
   }
 
-  const { name, tags, ingredients, steps, errors } =
+  const { name, tags, ingredients, servings, totalMinutes, steps, errors } =
     parseRecipeForm(formData);
   if (Object.keys(errors).length > 0) {
     return { errors };
@@ -222,7 +230,14 @@ export async function updateRecipe(
 
   const { error } = await supabase
     .from("recipes")
-    .update({ name, ingredients, instructions: steps, tags })
+    .update({
+      name,
+      ingredients,
+      instructions: steps,
+      tags,
+      servings,
+      total_minutes: totalMinutes,
+    })
     .eq("id", recipeId);
 
   if (error) {
