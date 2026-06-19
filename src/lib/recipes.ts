@@ -25,6 +25,12 @@ export function matchesTagFilters(
   );
 }
 
+/** Free-text servings ("4", "2-4", "makes 12"); trimmed, capped, null when blank. */
+export function parseServings(value: FormDataEntryValue | null): string | null {
+  const text = String(value ?? "").trim();
+  return text.length > 0 ? text.slice(0, 50) : null;
+}
+
 /** Parse a positive whole number from form input; null when blank/invalid. */
 export function parsePositiveInt(value: FormDataEntryValue | null): number | null {
   const parsed = Number.parseInt(String(value ?? "").trim(), 10);

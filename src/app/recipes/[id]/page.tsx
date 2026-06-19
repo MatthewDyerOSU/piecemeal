@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe, RecipeComment } from "@/types/recipe";
-import { allIngredients } from "@/lib/recipes";
+import { allIngredients, formatMinutes } from "@/lib/recipes";
 import CookingMode from "@/components/CookingMode";
 import AddToShoppingList from "@/components/AddToShoppingList";
 import RecipeComments from "@/components/RecipeComments";
@@ -40,6 +40,11 @@ export default async function RecipeDetailPage({
     .order("created_at", { ascending: true });
   const comments = (commentData as RecipeComment[]) ?? [];
 
+  const facts = [
+    recipe.servings ? `Serves ${recipe.servings}` : null,
+    formatMinutes(recipe.total_minutes),
+  ].filter((part): part is string => Boolean(part));
+
   return (
     <article className="page-narrow">
       <p>
@@ -59,6 +64,10 @@ export default async function RecipeDetailPage({
             </li>
           ))}
         </ul>
+      ) : null}
+
+      {facts.length > 0 ? (
+        <p className="recipe-facts recipe-facts-detail">{facts.join(" · ")}</p>
       ) : null}
 
       <AddToShoppingList items={allIngredients(recipe.ingredients)} />

@@ -137,15 +137,13 @@ export default function RecipeForm({
         <div className="field">
           <label htmlFor="recipe-servings">Serves</label>
           <p className="field-help" id="recipe-servings-help">
-            Optional. How many people it feeds.
+            Optional. A number or range, e.g. 4 or 2-4.
           </p>
           <input
-            type="number"
+            type="text"
             id="recipe-servings"
             name="servings"
-            min={1}
-            step={1}
-            inputMode="numeric"
+            maxLength={50}
             className="input-narrow"
             autoComplete="off"
             value={servingsValue}

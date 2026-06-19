@@ -842,6 +842,13 @@ legend {
   color: var(--color-text);
 }
 
+/* Same facts on the recipe page itself: a touch larger, with breathing room. */
+.recipe-facts-detail {
+  font-size: 0.95rem;
+  margin: var(--space-2) 0 var(--space-4);
+  color: var(--color-text-muted);
+}
+
 .recipe-card-actions {
   display: flex;
   flex-wrap: wrap;
