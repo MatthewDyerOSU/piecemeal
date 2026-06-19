@@ -127,34 +127,36 @@ export default async function RecipesPage({
                 <h2>
                   <Link href={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                 </h2>
-                <div className="recipe-card-tags">
-                  {(recipe.tags ?? []).length > 0 ? (
-                    <ul className="tag-list">
-                      {recipe.tags.map((tag) => (
-                        <li className={`tag-pill pill-${tag}`} key={tag}>
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </div>
-                {recipeFacts(recipe) ? (
-                  <p className="recipe-facts">{recipeFacts(recipe)}</p>
+                {(recipe.tags ?? []).length > 0 ? (
+                  <ul className="tag-list recipe-card-tags">
+                    {recipe.tags.map((tag) => (
+                      <li className={`tag-pill pill-${tag}`} key={tag}>
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
                 ) : null}
-                <p className="recipe-meta-line">
-                  <span className="recipe-meta-key">By</span>{" "}
-                  {ownerLabel(recipe)}
-                </p>
-                <div className="recipe-card-actions">
-                  <Link
-                    className="button button-secondary"
-                    href={`/recipes/${recipe.id}/edit`}
-                  >
-                    {recipe.user_id === currentUserId
-                      ? "Edit"
-                      : "Manage sharing"}
-                    <span className="visually-hidden"> {recipe.name}</span>
-                  </Link>
+                {/* Footer is pinned to the bottom of the equal-height card,
+                    and the facts line always reserves a row, so the By line
+                    and the Edit button align across every card regardless of
+                    pills, servings/time, or title length. */}
+                <div className="recipe-card-footer">
+                  <p className="recipe-facts">{recipeFacts(recipe)}</p>
+                  <p className="recipe-meta-line">
+                    <span className="recipe-meta-key">By</span>{" "}
+                    {ownerLabel(recipe)}
+                  </p>
+                  <div className="recipe-card-actions">
+                    <Link
+                      className="button button-secondary"
+                      href={`/recipes/${recipe.id}/edit`}
+                    >
+                      {recipe.user_id === currentUserId
+                        ? "Edit"
+                        : "Manage sharing"}
+                      <span className="visually-hidden"> {recipe.name}</span>
+                    </Link>
+                  </div>
                 </div>
               </article>
             </li>

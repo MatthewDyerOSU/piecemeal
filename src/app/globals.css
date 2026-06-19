@@ -824,18 +824,25 @@ legend {
   margin: 0;
 }
 
-/* Reserve the tag row's height even when a recipe has no tags, so the
-   owner / shared / Edit lines stay aligned across cards with and without
-   pills. */
 .recipe-card-tags {
-  display: flex;
-  align-items: center;
-  min-height: 2rem;
+  margin: 0;
 }
 
-/* Servings / total time, shown under the pills when set. */
+/* Footer pinned to the bottom of the equal-height card, so the facts, By
+   line, and Edit button share a baseline across every card in a row. */
+.recipe-card-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Servings / total time, shown under the pills when set. The row is always
+   reserved (min-height) so the By line below it never shifts up on cards
+   without this data. */
 .recipe-facts {
   margin: 0;
+  min-height: 1.2em;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
@@ -853,10 +860,6 @@ legend {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  /* Pin to the bottom of the (equal-height) card so the Edit button lines
-     up across the row no matter how much content sits above it — short
-     title, no pills, or no servings/time line. */
-  margin-top: auto;
 }
 
 /* --- Tag pills (static on cards, checkbox pills in filters/forms) --- */
