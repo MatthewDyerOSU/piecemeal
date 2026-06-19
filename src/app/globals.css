@@ -816,8 +816,17 @@ legend {
   margin: 0;
 }
 
+/* Reserve two lines for every title so a short title ("Stew Chicken") and a
+   long one give the same card height; titles longer than two lines clamp with
+   an ellipsis instead of pushing the card taller. */
 .recipe-card h2 {
   font-size: 1.1rem;
+  line-height: 1.3;
+  min-height: 2.6em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .recipe-card .tag-list {
@@ -854,10 +863,15 @@ legend {
   color: var(--color-text-muted);
 }
 
+/* Pin the actions to the bottom of the card. On a natural-height card there's
+   no free space, so margin-top resolves to 0 and the uniform space-3 gap is
+   kept; when a grid row stretches cards to equal height, the extra space falls
+   between the By line and the button, keeping Edit aligned across the row. */
 .recipe-card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  margin-top: auto;
 }
 
 /* --- Tag pills (static on cards, checkbox pills in filters/forms) --- */
