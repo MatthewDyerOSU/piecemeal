@@ -9,7 +9,11 @@ import {
   setShoppingItemChecked,
   updateShoppingItem,
 } from "@/app/shopping-list/actions";
-import { buildChecklistText, buildRemindersIcs } from "@/lib/shoppingExport";
+import {
+  buildChecklistHtml,
+  buildChecklistText,
+  buildRemindersIcs,
+} from "@/lib/shoppingExport";
 
 function download(filename: string, content: string, mime: string) {
   const blob = new Blob([content], { type: mime });
@@ -21,6 +25,21 @@ function download(filename: string, content: string, mime: string) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Open a clean printable list in a new window and trigger the print dialog,
+ * where "Save as PDF" yields a PDF that Samsung Notes can import. Falls back
+ * to a text download if the window is blocked (e.g. a strict popup blocker).
+ */
+function printChecklist(items: ShoppingListItem[]) {
+  const win = window.open("", "_blank");
+  if (!win) {
+    download("shopping-list.txt", buildChecklistText(items), "text/plain");
+    return;
+  }
+  win.document.write(buildChecklistHtml(items));
+  win.document.close();
 }
 
 export default function ShoppingList({
@@ -288,6 +307,13 @@ export default function ShoppingList({
               <button
                 type="button"
                 className="button button-secondary"
+                onClick={() => printChecklist(items)}
+              >
+                Save as PDF (Samsung Notes)
+              </button>
+              <button
+                type="button"
+                className="button button-secondary"
                 onClick={() =>
                   download(
                     "shopping-list.txt",
@@ -301,8 +327,10 @@ export default function ShoppingList({
             </div>
             <p className="field-help">
               The .ics opens in Reminders on iPhone as tappable checkboxes.
-              The .txt opens in Apple Notes or Samsung Notes; both can turn
-              it into a checklist.
+              Save as PDF opens a print dialog — choose “Save as PDF”, then
+              import it into Samsung Notes (Samsung’s own .snb/.spd note
+              formats are proprietary, so a PDF is the reliable way in). The
+              .txt opens as an editable note in Samsung Notes or Apple Notes.
             </p>
           </section>
         </>
